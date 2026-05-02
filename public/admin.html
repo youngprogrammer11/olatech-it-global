@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Olatech Admin Panel</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+
+    /* ── LOGIN ── */
+    #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .login-box{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:48px 40px;width:100%;max-width:400px;text-align:center}
+    .login-logo{width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;margin:0 auto 20px;box-shadow:0 0 40px rgba(37,99,235,0.4)}
+    .login-box h1{font-size:1.4rem;font-weight:800;margin-bottom:6px;letter-spacing:-0.02em}
+    .login-box p{font-size:0.85rem;color:#64748b;margin-bottom:32px}
+    .login-box input{width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:13px 16px;font-size:0.9rem;color:#e2e8f0;outline:none;margin-bottom:14px;font-family:inherit}
+    .login-box input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.15)}
+    .login-btn{width:100%;background:#2563eb;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:700;cursor:pointer;transition:background 0.2s}
+    .login-btn:hover{background:#1d4ed8}
+    .login-error{color:#f87171;font-size:0.82rem;margin-top:10px;display:none}
+
+    /* ── LAYOUT ── */
+    #adminApp{display:none;min-height:100vh}
+    .topbar{background:#1e293b;border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .topbar-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1rem;letter-spacing:-0.01em}
+    .topbar-logo .gem{width:32px;height:32px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:800}
+    .topbar-right{display:flex;align-items:center;gap:12px}
+    .topbar-right span{font-size:0.8rem;color:#64748b}
+    .logout-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:7px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit}
+    .logout-btn:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#f87171}
+
+    .admin-body{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 57px)}
+
+    /* ── SIDEBAR ── */
+    .sidebar{background:#1e293b;border-right:1px solid rgba(255,255,255,0.06);padding:24px 16px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-size:0.875rem;font-weight:500;color:#64748b;cursor:pointer;transition:all 0.2s;margin-bottom:4px;user-select:none}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:#e2e8f0}
+    .nav-item.active{background:rgba(37,99,235,0.15);color:#60a5fa}
+    .nav-item svg{width:18px;height:18px;flex-shrink:0}
+    .nav-section{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;padding:16px 14px 8px}
+
+    /* ── MAIN CONTENT ── */
+    .main{padding:32px;overflow-y:auto}
+    .page{display:none}
+    .page.active{display:block}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px}
+    .page-header h2{font-size:1.4rem;font-weight:800;letter-spacing:-0.02em}
+    .page-header p{font-size:0.83rem;color:#64748b;margin-top:3px}
+
+    /* ── STATS ROW ── */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+    .stat-card{background:#1e293b;border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:22px 24px}
+    .stat-card .num{font-size:2rem;font-weight:800;letter-spacing:-0.03em;background:linear-gradient(135deg,#2563eb,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .stat-card .lbl{font-size:0.8rem;color:#64748b;margin-top:4px}
+
+    /* ── TABLE ── */
+    .table-wrap{background:#1e293b;border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    th{background:#162032;padding:13px 18px;text-align:left;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569}
+    td{padding:14px 18px;font-size:0.85rem;border-top:1px solid rgba(255,255,255,0.05);vertical-align:top}
+    tr:hover td{background:rgba(255,255,255,0.02)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600}
+    .badge-new{background:rgba(37,99,235,0.15);color:#60a5fa}
+    .badge-read{background:rgba(100,116,139,0.15);color:#94a3b8}
+    .badge-replied{background:rgba(34,197,94,0.15);color:#4ade80}
+    .msg-text{color:#94a3b8;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .action-btn{padding:5px 12px;border-radius:7px;font-size:0.75rem;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s}
+    .btn-view{background:rgba(37,99,235,0.12);color:#60a5fa}
+    .btn-view:hover{background:rgba(37,99,235,0.25)}
+    .btn-delete{background:rgba(239,68,68,0.1);color:#f87171}
+    .btn-delete:hover{background:rgba(239,68,68,0.2)}
+    .btn-edit{background:rgba(234,179,8,0.1);color:#fbbf24}
+    .btn-edit:hover{background:rgba(234,179,8,0.2)}
+    .actions{display:flex;gap:6px;flex-wrap:wrap}
+
+    /* ── ADD BUTTON ── */
+    .add-btn{display:inline-flex;align-items:center;gap:7px;background:#2563eb;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:0.85rem;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit}
+    .add-btn:hover{background:#1d4ed8}
+
+    /* ── MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)}
+    .modal{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:36px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+    .modal h3{font-size:1.1rem;font-weight:800;margin-bottom:24px;letter-spacing:-0.02em}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:0.78rem;font-weight:600;color:#94a3b8;margin-bottom:7px}
+    .form-group input,.form-group textarea,.form-group select{width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:0.875rem;color:#e2e8f0;outline:none;font-family:inherit;transition:border-color 0.2s}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.12)}
+    .form-group textarea{resize:vertical;min-height:100px;line-height:1.6}
+    .form-group select option{background:#1e293b}
+    .modal-actions{display:flex;gap:10px;margin-top:24px;justify-content:flex-end}
+    .btn-cancel{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:10px 20px;border-radius:9px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit}
+    .btn-save{background:#2563eb;color:#fff;border:none;padding:10px 24px;border-radius:9px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.2s}
+    .btn-save:hover{background:#1d4ed8}
+
+    /* ── MESSAGE DETAIL ── */
+    .msg-detail{background:#162032;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;margin-bottom:16px}
+    .msg-detail-row{display:flex;gap:12px;margin-bottom:10px}
+    .msg-detail-label{font-size:0.75rem;font-weight:600;color:#475569;width:70px;flex-shrink:0;padding-top:2px}
+    .msg-detail-val{font-size:0.875rem;color:#e2e8f0;line-height:1.6}
+
+    /* ── EMPTY STATE ── */
+    .empty{text-align:center;padding:60px 20px;color:#475569}
+    .empty svg{width:40px;height:40px;margin:0 auto 14px;opacity:0.4}
+    .empty p{font-size:0.9rem}
+
+    /* ── COLOR SWATCHES ── */
+    .swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+    .swatch.selected,.swatch:hover{border-color:#fff;transform:scale(1.15)}
+
+    /* ── TOAST ── */
+    .toast{position:fixed;bottom:28px;right:28px;background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 20px;font-size:0.85rem;font-weight:500;z-index:999;transform:translateY(100px);opacity:0;transition:all 0.3s;max-width:320px}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{border-color:rgba(34,197,94,0.3);color:#4ade80}
+    .toast.error{border-color:rgba(239,68,68,0.3);color:#f87171}
+
+    @media(max-width:768px){
+      .admin-body{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .stats-row{grid-template-columns:1fr 1fr}
+      .main{padding:20px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">O</div>
+    <h1>Admin Panel</h1>
+    <p>Olatech IT Global — restricted access</p>
+    <input type="password" id="loginPass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="gem">O</div>
+      Olatech Admin
+    </div>
+    <div class="topbar-right">
+      <span>Admin Panel</span>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="nav-section">Menu</div>
+      <div class="nav-item active" onclick="showPage('messages')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+        Messages
+      </div>
+      <div class="nav-item" onclick="showPage('testimonials')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+        Testimonials
+      </div>
+      <div class="nav-item" onclick="showPage('projects')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        Projects
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+      <!-- MESSAGES PAGE -->
+      <div class="page active" id="page-messages">
+        <div class="page-header">
+          <div>
+            <h2>Contact Messages</h2>
+            <p>All messages sent through your website contact form</p>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="num" id="countTotal">0</div><div class="lbl">Total Messages</div></div>
+          <div class="stat-card"><div class="num" id="countNew">0</div><div class="lbl">New / Unread</div></div>
+          <div class="stat-card"><div class="num" id="countReplied">0</div><div class="lbl">Replied</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Service</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="messagesTable"><tr><td colspan="7" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TESTIMONIALS PAGE -->
+      <div class="page" id="page-testimonials">
+        <div class="page-header">
+          <div>
+            <h2>Client Testimonials</h2>
+            <p>These show up in the "What our clients say" section</p>
+          </div>
+          <button class="add-btn" onclick="openTestimonialModal()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Testimonial
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Quote</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="testimonialsTable"><tr><td colspan="5" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROJECTS PAGE -->
+      <div class="page" id="page-projects">
+        <div class="page-header">
+          <div>
+            <h2>Portfolio Projects</h2>
+            <p>These show up in the "Projects that define us" section</p>
+          </div>
+          <button class="add-btn" onclick="openProjectModal()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Project
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Category</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="projectsTable"><tr><td colspan="5" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /admin-body -->
+</div><!-- /adminApp -->
+
+<!-- MESSAGE DETAIL MODAL -->
+<div class="modal-overlay" id="msgModal" style="display:none">
+  <div class="modal">
+    <h3>Message Details</h3>
+    <div id="msgDetailContent"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('msgModal')">Close</button>
+      <button class="btn-save" id="markRepliedBtn">Mark as Replied</button>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIAL MODAL -->
+<div class="modal-overlay" id="testimonialModal" style="display:none">
+  <div class="modal">
+    <h3 id="testimonialModalTitle">Add Testimonial</h3>
+    <input type="hidden" id="tId" />
+    <div class="form-group"><label>Full Name *</label><input id="tName" placeholder="e.g. John Adeyemi" /></div>
+    <div class="form-group"><label>Role / Position *</label><input id="tRole" placeholder="e.g. CEO, Founder" /></div>
+    <div class="form-group"><label>Company</label><input id="tCompany" placeholder="e.g. TechCorp Nigeria" /></div>
+    <div class="form-group">
+      <label>Quote *</label>
+      <textarea id="tQuote" placeholder="What did they say about working with you?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Avatar Color</label>
+      <div class="swatches">
+        <div class="swatch selected" style="background:linear-gradient(135deg,#2563eb,#38bdf8)" data-color="linear-gradient(135deg,#2563eb,#38bdf8)" onclick="selectColor(this)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#6d28d9,#db2777)" data-color="linear-gradient(135deg,#6d28d9,#db2777)" onclick="selectColor(this)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#059669,#0891b2)" data-color="linear-gradient(135deg,#059669,#0891b2)" onclick="selectColor(this)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#dc2626,#d97706)" data-color="linear-gradient(135deg,#dc2626,#d97706)" onclick="selectColor(this)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0f172a,#1d4ed8)" data-color="linear-gradient(135deg,#0f172a,#1d4ed8)" onclick="selectColor(this)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)" data-color="linear-gradient(135deg,#7c3aed,#4f46e5)" onclick="selectColor(this)"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('testimonialModal')">Cancel</button>
+      <button class="btn-save" onclick="saveTestimonial()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="projectModal" style="display:none">
+  <div class="modal">
+    <h3 id="projectModalTitle">Add Project</h3>
+    <input type="hidden" id="pId" />
+    <div class="form-group"><label>Project Name *</label><input id="pName" placeholder="e.g. FinEdge Banking Platform" /></div>
+    <div class="form-group">
+      <label>Category *</label>
+      <select id="pCategory">
+        <option value="web">Web Development</option>
+        <option value="software">Software Development</option>
+        <option value="brand">Branding</option>
+        <option value="marketing">Digital Marketing</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Category Label</label><input id="pCategoryLabel" placeholder="e.g. Web Development · Fintech" /></div>
+    <div class="form-group">
+      <label>Description *</label>
+      <textarea id="pDescription" placeholder="Brief description of the project and results achieved"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Card Theme</label>
+      <select id="pTheme">
+        <option value="theme-fintech">Blue (Fintech)</option>
+        <option value="theme-saas">Cyan (SaaS)</option>
+        <option value="theme-brand">Purple (Brand)</option>
+        <option value="theme-ecom">Red (E-commerce)</option>
+        <option value="theme-growth">Green (Growth)</option>
+        <option value="theme-dash">Amber (Dashboard)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('projectModal')">Cancel</button>
+      <button class="btn-save" onclick="saveProject()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentMsgId = null;
+  let selectedColor = 'linear-gradient(135deg,#2563eb,#38bdf8)';
+
+  // ── AUTH ──
+  async function doLogin() {
+    const pass = document.getElementById('loginPass').value;
+    const err  = document.getElementById('loginError');
+    err.style.display = 'none';
+    try {
+      const res  = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: pass }) });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminApp').style.display = 'block';
+        loadMessages();
+      } else {
+        err.style.display = 'block';
+      }
+    } catch { err.style.display = 'block'; }
+  }
+
+  async function doLogout() {
+    await fetch('/api/admin/logout', { method:'POST' });
+    location.reload();
+  }
+
+  // Check if already logged in
+  async function checkAuth() {
+    try {
+      const res  = await fetch('/api/admin/check');
+      const data = await res.json();
+      if (data.isAdmin) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminApp').style.display = 'block';
+        loadMessages();
+      }
+    } catch {}
+  }
+  checkAuth();
+
+  // ── NAVIGATION ──
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (name === 'messages')     loadMessages();
+    if (name === 'testimonials') loadTestimonials();
+    if (name === 'projects')     loadProjects();
+  }
+
+  // ── TOAST ──
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── MODAL ──
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+  // ── MESSAGES ──
+  async function loadMessages() {
+    try {
+      const res  = await fetch('/api/admin/contacts');
+      const data = await res.json();
+      const rows = data.data || [];
+
+      document.getElementById('countTotal').textContent   = rows.length;
+      document.getElementById('countNew').textContent     = rows.filter(r => r.status === 'new').length;
+      document.getElementById('countReplied').textContent = rows.filter(r => r.status === 'replied').length;
+
+      const tbody = document.getElementById('messagesTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg><p>No messages yet</p></div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.name}</strong></td>
+          <td><a href="mailto:${r.email}" style="color:#60a5fa">${r.email}</a></td>
+          <td>${r.service || 'N/A'}</td>
+          <td class="msg-text">${r.message}</td>
+          <td style="color:#64748b;white-space:nowrap">${new Date(r.createdAt).toLocaleDateString('en-GB')}</td>
+          <td><span class="badge badge-${r.status}">${r.status}</span></td>
+          <td><div class="actions">
+            <button class="action-btn btn-view" onclick="viewMessage('${r._id}','${escape(r.name)}','${escape(r.email)}','${escape(r.phone||'')}','${escape(r.service||'')}','${escape(r.message)}','${r.status}')">View</button>
+            <button class="action-btn btn-delete" onclick="deleteMessage('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function viewMessage(id, name, email, phone, service, message, status) {
+    currentMsgId = id;
+    document.getElementById('msgDetailContent').innerHTML = `
+      <div class="msg-detail">
+        <div class="msg-detail-row"><div class="msg-detail-label">Name</div><div class="msg-detail-val">${unescape(name)}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Email</div><div class="msg-detail-val"><a href="mailto:${unescape(email)}" style="color:#60a5fa">${unescape(email)}</a></div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Phone</div><div class="msg-detail-val">${unescape(phone) || 'Not provided'}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Service</div><div class="msg-detail-val">${unescape(service) || 'Not specified'}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Message</div><div class="msg-detail-val" style="white-space:pre-wrap">${unescape(message)}</div></div>
+      </div>`;
+    const btn = document.getElementById('markRepliedBtn');
+    if (status === 'replied') {
+      btn.textContent = 'Already Replied';
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+    } else {
+      btn.textContent = 'Mark as Replied';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.onclick = () => markReplied(id);
+    }
+    document.getElementById('msgModal').style.display = 'flex';
+  }
+
+  async function markReplied(id) {
+    await fetch(`/api/admin/contacts/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status:'replied' }) });
+    closeModal('msgModal');
+    showToast('Marked as replied');
+    loadMessages();
+  }
+
+  async function deleteMessage(id) {
+    if (!confirm('Delete this message?')) return;
+    await fetch(`/api/admin/contacts/${id}`, { method:'DELETE' });
+    showToast('Message deleted');
+    loadMessages();
+  }
+
+  // ── TESTIMONIALS ──
+  async function loadTestimonials() {
+    try {
+      const res  = await fetch('/api/admin/testimonials');
+      const data = await res.json();
+      const rows = data.data || [];
+      const tbody = document.getElementById('testimonialsTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No testimonials yet. Add your first one.</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:10px">
+            <div style="width:34px;height:34px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0">${r.initials}</div>
+            <strong>${r.name}</strong>
+          </div></td>
+          <td style="color:#94a3b8">${r.role}${r.company ? ', ' + r.company : ''}</td>
+          <td class="msg-text">${r.quote}</td>
+          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
+          <td><div class="actions">
+            <button class="action-btn btn-edit" onclick="editTestimonial(${JSON.stringify(r).split('"').join("'")})">Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteTestimonial('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function openTestimonialModal(t = null) {
+    document.getElementById('testimonialModalTitle').textContent = t ? 'Edit Testimonial' : 'Add Testimonial';
+    document.getElementById('tId').value       = t ? t._id : '';
+    document.getElementById('tName').value     = t ? t.name : '';
+    document.getElementById('tRole').value     = t ? t.role : '';
+    document.getElementById('tCompany').value  = t ? t.company : '';
+    document.getElementById('tQuote').value    = t ? t.quote : '';
+    selectedColor = t ? t.color : 'linear-gradient(135deg,#2563eb,#38bdf8)';
+    document.querySelectorAll('.swatch').forEach(s => {
+      s.classList.toggle('selected', s.dataset.color === selectedColor);
+    });
+    document.getElementById('testimonialModal').style.display = 'flex';
+  }
+
+  function editTestimonial(raw) {
+    const t = JSON.parse(raw.split("'").join('"'));
+    openTestimonialModal(t);
+  }
+
+  function selectColor(el) {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedColor = el.dataset.color;
+  }
+
+  async function saveTestimonial() {
+    const id      = document.getElementById('tId').value;
+    const payload = {
+      name:    document.getElementById('tName').value.trim(),
+      role:    document.getElementById('tRole').value.trim(),
+      company: document.getElementById('tCompany').value.trim(),
+      quote:   document.getElementById('tQuote').value.trim(),
+      color:   selectedColor
+    };
+    if (!payload.name || !payload.role || !payload.quote) return showToast('Name, role, and quote are required', 'error');
+    const url    = id ? `/api/admin/testimonials/${id}` : '/api/admin/testimonials';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeModal('testimonialModal');
+    showToast(id ? 'Testimonial updated' : 'Testimonial added');
+    loadTestimonials();
+  }
+
+  async function deleteTestimonial(id) {
+    if (!confirm('Delete this testimonial?')) return;
+    await fetch(`/api/admin/testimonials/${id}`, { method:'DELETE' });
+    showToast('Testimonial deleted');
+    loadTestimonials();
+  }
+
+  // ── PROJECTS ──
+  async function loadProjects() {
+    try {
+      const res  = await fetch('/api/admin/projects');
+      const data = await res.json();
+      const rows = data.data || [];
+      const tbody = document.getElementById('projectsTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No projects yet. Add your first one.</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.name}</strong></td>
+          <td><span class="badge badge-new">${r.category}</span></td>
+          <td class="msg-text">${r.description}</td>
+          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
+          <td><div class="actions">
+            <button class="action-btn btn-edit" onclick='editProject(${JSON.stringify(r)})'>Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteProject('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function openProjectModal(p = null) {
+    document.getElementById('projectModalTitle').textContent = p ? 'Edit Project' : 'Add Project';
+    document.getElementById('pId').value            = p ? p._id : '';
+    document.getElementById('pName').value          = p ? p.name : '';
+    document.getElementById('pCategory').value      = p ? p.category : 'web';
+    document.getElementById('pCategoryLabel').value = p ? p.categoryLabel : '';
+    document.getElementById('pDescription').value   = p ? p.description : '';
+    document.getElementById('pTheme').value         = p ? p.theme : 'theme-fintech';
+    document.getElementById('projectModal').style.display = 'flex';
+  }
+
+  function editProject(p) { openProjectModal(p); }
+
+  async function saveProject() {
+    const id      = document.getElementById('pId').value;
+    const payload = {
+      name:          document.getElementById('pName').value.trim(),
+      category:      document.getElementById('pCategory').value,
+      categoryLabel: document.getElementById('pCategoryLabel').value.trim(),
+      description:   document.getElementById('pDescription').value.trim(),
+      theme:         document.getElementById('pTheme').value
+    };
+    if (!payload.name || !payload.description) return showToast('Name and description are required', 'error');
+    const url    = id ? `/api/admin/projects/${id}` : '/api/admin/projects';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeModal('projectModal');
+    showToast(id ? 'Project updated' : 'Project added');
+    loadProjects();
+  }
+
+  async function deleteProject(id) {
+    if (!confirm('Delete this project?')) return;
+    await fetch(`/api/admin/projects/${id}`, { method:'DELETE' });
+    showToast('Project deleted');
+    loadProjects();
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.style.display = 'none';
+    });
+  });
+</script>
+</body>
+</html>
