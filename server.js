@@ -12,17 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      frameSrc: ["https://www.google.com", "https://maps.google.com"],
-      connectSrc: ["'self'"]
-    }
-  }
+  contentSecurityPolicy: false
 }));
 
 // Trust Render proxy
