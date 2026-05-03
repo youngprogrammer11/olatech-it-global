@@ -214,3 +214,84 @@ if (window.matchMedia('(min-width: 1024px) and (hover: hover)').matches) {
     });
   });
 }
+
+/* ─── Load testimonials from database ─── */
+async function loadTestimonials() {
+  try {
+    const res  = await fetch('/api/testimonials');
+    const data = await res.json();
+    if (!data.success || !data.data || data.data.length === 0) return;
+
+    const track = document.getElementById('testimonialTrack');
+    if (!track) return;
+
+    const cards = data.data.map(t => `
+      <div class="t-card">
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="t-quote">"${t.quote}"</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:${t.color}">${t.initials}</div>
+          <div>
+            <div class="t-name">${t.name}</div>
+            <div class="t-role">${t.role}${t.company ? ', ' + t.company : ''}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Duplicate for infinite scroll
+    track.innerHTML = cards + cards;
+
+  } catch (err) {
+    console.log('Using default testimonials');
+  }
+}
+
+/* ─── Load projects from database ─── */
+async function loadProjects() {
+  try {
+    const res  = await fetch('/api/projects');
+    const data = await res.json();
+    if (!data.success || !data.data || data.data.length === 0) return;
+
+    const grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
+
+    const iconMap = {
+      web:       `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3"/></svg>`,
+      software:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h16.5m0 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5"/></svg>`,
+      brand:     `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>`,
+      marketing: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z"/></svg>`
+    };
+
+    const cards = data.data.map((p, i) => {
+      const size = i === 0 ? 'proj-card--lg' : i % 3 === 1 ? 'proj-card--md' : 'proj-card--sm';
+      return `
+        <div class="proj-card ${size}" data-category="${p.category}">
+          <div class="proj-thumb">
+            <div class="proj-bg ${p.theme}"></div>
+            <div class="proj-icon-center">
+              ${iconMap[p.category] || iconMap.web}
+              <span class="proj-icon-label">${p.name}</span>
+            </div>
+            <div class="proj-hover-overlay"><span class="proj-cta">View Case Study</span></div>
+          </div>
+          <div class="proj-meta">
+            <div class="proj-cat">${p.categoryLabel || p.category}</div>
+            <div class="proj-name">${p.name}</div>
+            <div class="proj-desc">${p.description}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    grid.innerHTML = cards;
+
+  } catch (err) {
+    console.log('Using default projects');
+  }
+}
+
+// Run on page load
+loadTestimonials();
+loadProjects();
+
