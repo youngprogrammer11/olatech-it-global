@@ -239,8 +239,13 @@ async function loadTestimonials() {
       </div>
     `).join('');
 
-    // Duplicate for infinite scroll
-    track.innerHTML = cards + cards;
+    // Only duplicate for infinite scroll if there are 3 or more testimonials
+    track.innerHTML = data.data.length >= 3 ? cards + cards : cards;
+
+    // Stop animation if too few cards
+    if (data.data.length < 3) {
+      track.style.animation = 'none';
+    }
 
   } catch (err) {
     console.log('Using default testimonials');
