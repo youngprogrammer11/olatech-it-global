@@ -266,14 +266,17 @@ async function loadProjects() {
 
     const cards = data.data.map((p, i) => {
       const size = i === 0 ? 'proj-card--lg' : i % 3 === 1 ? 'proj-card--md' : 'proj-card--sm';
+      const thumb = p.imageData
+        ? `<img src="${p.imageData}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />`
+        : `<div class="proj-bg ${p.theme}"></div>
+           <div class="proj-icon-center">
+             ${iconMap[p.category] || iconMap.web}
+             <span class="proj-icon-label">${p.name}</span>
+           </div>`;
       return `
         <div class="proj-card ${size}" data-category="${p.category}">
           <div class="proj-thumb">
-            <div class="proj-bg ${p.theme}"></div>
-            <div class="proj-icon-center">
-              ${iconMap[p.category] || iconMap.web}
-              <span class="proj-icon-label">${p.name}</span>
-            </div>
+            ${thumb}
             <div class="proj-hover-overlay"><span class="proj-cta">View Case Study</span></div>
           </div>
           <div class="proj-meta">

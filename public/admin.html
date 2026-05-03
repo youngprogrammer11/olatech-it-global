@@ -300,8 +300,25 @@
       <textarea id="pDescription" placeholder="Brief description of the project and results achieved"></textarea>
     </div>
     <div class="form-group">
-      <label>Card Theme</label>
-      <select id="pTheme">
+      <label>Project Image (optional)</label>
+      <div id="imageUploadArea" style="border:2px dashed rgba(255,255,255,0.1);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s" onclick="document.getElementById('pImageFile').click()">
+        <div id="imagePreview" style="display:none;margin-bottom:12px">
+          <img id="previewImg" style="max-height:120px;border-radius:8px;margin:0 auto" />
+        </div>
+        <div id="uploadPrompt">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;color:#475569;margin:0 auto 8px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+          <p style="font-size:0.82rem;color:#64748b">Click to upload a project image</p>
+          <p style="font-size:0.75rem;color:#475569;margin-top:4px">JPG, PNG or WebP. Max 2MB.</p>
+        </div>
+      </div>
+      <input type="file" id="pImageFile" accept="image/*" style="display:none" onchange="handleImageUpload(event)" />
+      <div id="imageError" style="color:#f87171;font-size:0.78rem;margin-top:6px;display:none"></div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.06)"></div>
+        <span style="font-size:0.72rem;color:#475569">or use a colour theme</span>
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.06)"></div>
+      </div>
+      <select id="pTheme" style="width:100%;margin-top:10px;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:0.875rem;color:#e2e8f0;outline:none;font-family:inherit">
         <option value="theme-fintech">Blue (Fintech)</option>
         <option value="theme-saas">Cyan (SaaS)</option>
         <option value="theme-brand">Purple (Brand)</option>
@@ -557,6 +574,42 @@
     } catch (err) { console.error(err); }
   }
 
+  // ── IMAGE UPLOAD ──
+  let currentImageData = '';
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    const errEl = document.getElementById('imageError');
+    errEl.style.display = 'none';
+
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      errEl.textContent = 'Image is too large. Please use an image under 2MB.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      currentImageData = e.target.result;
+      document.getElementById('previewImg').src = currentImageData;
+      document.getElementById('imagePreview').style.display = 'block';
+      document.getElementById('uploadPrompt').style.display = 'none';
+      document.getElementById('imageUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearImageUpload() {
+    currentImageData = '';
+    document.getElementById('pImageFile').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('uploadPrompt').style.display = 'block';
+    document.getElementById('imageUploadArea').style.borderColor = 'rgba(255,255,255,0.1)';
+    document.getElementById('imageError').style.display = 'none';
+  }
+
   function openProjectModal(p = null) {
     document.getElementById('projectModalTitle').textContent = p ? 'Edit Project' : 'Add Project';
     document.getElementById('pId').value            = p ? p._id : '';
@@ -565,6 +618,17 @@
     document.getElementById('pCategoryLabel').value = p ? p.categoryLabel : '';
     document.getElementById('pDescription').value   = p ? p.description : '';
     document.getElementById('pTheme').value         = p ? p.theme : 'theme-fintech';
+
+    // Handle existing image
+    clearImageUpload();
+    if (p && p.imageData) {
+      currentImageData = p.imageData;
+      document.getElementById('previewImg').src = p.imageData;
+      document.getElementById('imagePreview').style.display = 'block';
+      document.getElementById('uploadPrompt').style.display = 'none';
+      document.getElementById('imageUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
+    }
+
     document.getElementById('projectModal').style.display = 'flex';
   }
 
@@ -577,7 +641,8 @@
       category:      document.getElementById('pCategory').value,
       categoryLabel: document.getElementById('pCategoryLabel').value.trim(),
       description:   document.getElementById('pDescription').value.trim(),
-      theme:         document.getElementById('pTheme').value
+      theme:         document.getElementById('pTheme').value,
+      imageData:     currentImageData
     };
     if (!payload.name || !payload.description) return showToast('Name and description are required', 'error');
     const url    = id ? `/api/admin/projects/${id}` : '/api/admin/projects';
