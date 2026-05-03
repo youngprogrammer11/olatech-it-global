@@ -309,6 +309,19 @@ async function loadProjects() {
 loadTestimonials();
 loadProjects();
 loadPricing();
+loadAboutPhoto();
+
+/* ─── Load about photo from localStorage ─── */
+function loadAboutPhoto() {
+  const photo = localStorage.getItem('aboutPhotoData');
+  const imgEl = document.getElementById('aboutPhoto');
+  const placeholder = document.getElementById('aboutPlaceholder');
+  if (photo && imgEl && placeholder) {
+    imgEl.src = photo;
+    imgEl.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+}
 
 /* ─── Load pricing from database ─── */
 async function loadPricing() {
