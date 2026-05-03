@@ -195,9 +195,13 @@ if (form) {
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-/* ─── Spin keyframe ─── */
 const style = document.createElement('style');
-style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+style.textContent = `
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  #portfolioGrid { grid-template-columns: repeat(3, 1fr) !important; }
+  #portfolioGrid .proj-card { grid-column: span 1 !important; }
+  #portfolioGrid .proj-card .proj-thumb { aspect-ratio: 16/10 !important; }
+`;
 document.head.appendChild(style);
 
 /* ─── Service card tilt (subtle, desktop only) ─── */
@@ -239,12 +243,15 @@ async function loadTestimonials() {
       </div>
     `).join('');
 
-    // Only duplicate for infinite scroll if there are 3 or more testimonials
-    track.innerHTML = data.data.length >= 3 ? cards + cards : cards;
-
-    // Stop animation if too few cards
-    if (data.data.length < 3) {
+    // Need at least 3 cards for seamless infinite scroll, otherwise just show them static
+    if (data.data.length >= 3) {
+      track.innerHTML = cards + cards;
+    } else {
+      track.innerHTML = cards;
       track.style.animation = 'none';
+      track.style.flexWrap = 'wrap';
+      track.style.width = 'auto';
+      track.style.padding = '0 32px';
     }
 
   } catch (err) {
@@ -270,7 +277,6 @@ async function loadProjects() {
     };
 
     const cards = data.data.map((p, i) => {
-      const size = i === 0 ? 'proj-card--lg' : i % 3 === 1 ? 'proj-card--md' : 'proj-card--sm';
       const thumb = p.imageData
         ? `<img src="${p.imageData}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />`
         : `<div class="proj-bg ${p.theme}"></div>
@@ -279,7 +285,7 @@ async function loadProjects() {
              <span class="proj-icon-label">${p.name}</span>
            </div>`;
       return `
-        <div class="proj-card ${size}" data-category="${p.category}">
+        <div class="proj-card proj-card--sm" data-category="${p.category}">
           <div class="proj-thumb">
             ${thumb}
             <div class="proj-hover-overlay"><span class="proj-cta">View Case Study</span></div>
