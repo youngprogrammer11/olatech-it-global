@@ -5,6 +5,7 @@ const requireAuth = require('../middleware/auth');
 const Contact    = require('../models/Contact');
 const Testimonial = require('../models/Testimonial');
 const Project    = require('../models/Project');
+const Pricing    = require('../models/Pricing');
 
 // ─── LOGIN ───────────────────────────────────────────
 router.post('/login', async (req, res) => {
@@ -135,6 +136,43 @@ router.put('/projects/:id', requireAuth, async (req, res) => {
 router.delete('/projects/:id', requireAuth, async (req, res) => {
   try {
     await Project.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── PRICING ──────────────────────────────────────────
+router.get('/pricing', requireAuth, async (req, res) => {
+  try {
+    const data = await Pricing.find().sort({ order: 1, createdAt: 1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/pricing', requireAuth, async (req, res) => {
+  try {
+    const item = await Pricing.create(req.body);
+    res.status(201).json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put('/pricing/:id', requireAuth, async (req, res) => {
+  try {
+    const item = await Pricing.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/pricing/:id', requireAuth, async (req, res) => {
+  try {
+    await Pricing.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

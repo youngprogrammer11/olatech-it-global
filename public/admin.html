@@ -167,6 +167,10 @@
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
         Projects
       </div>
+      <div class="nav-item" onclick="showPage('pricing')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Pricing
+      </div>
     </div>
 
     <!-- Main -->
@@ -233,7 +237,25 @@
         </div>
       </div>
 
-    </div><!-- /main -->
+      <!-- PRICING PAGE -->
+      <div class="page" id="page-pricing">
+        <div class="page-header">
+          <div>
+            <h2>Pricing</h2>
+            <p>These show up in the Pricing section on your website</p>
+          </div>
+          <button class="add-btn" onclick="openPricingModal()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Price
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Service</th><th>Price</th><th>Period</th><th>Features</th><th>Popular</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="pricingTable"><tr><td colspan="7" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
   </div><!-- /admin-body -->
 </div><!-- /adminApp -->
 
@@ -334,6 +356,32 @@
   </div>
 </div>
 
+<!-- PRICING MODAL -->
+<div class="modal-overlay" id="pricingModal" style="display:none">
+  <div class="modal">
+    <h3 id="pricingModalTitle">Add Pricing</h3>
+    <input type="hidden" id="prId" />
+    <div class="form-group"><label>Service Name *</label><input id="prService" placeholder="e.g. Web Development" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Price *</label><input id="prPrice" placeholder="e.g. ₦150,000 or From $500" /></div>
+      <div class="form-group"><label>Per</label><input id="prPeriod" placeholder="e.g. project, month, hour" /></div>
+    </div>
+    <div class="form-group"><label>Short Description</label><textarea id="prDescription" placeholder="What is included at a high level" style="min-height:70px"></textarea></div>
+    <div class="form-group">
+      <label>Features (one per line)</label>
+      <textarea id="prFeatures" placeholder="Responsive design&#10;Up to 5 pages&#10;Contact form&#10;1 month free support" style="min-height:120px"></textarea>
+    </div>
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:12px">
+      <input type="checkbox" id="prHighlighted" style="width:auto;accent-color:#2563eb" />
+      <label for="prHighlighted" style="margin:0;cursor:pointer">Mark as Most Popular</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('pricingModal')">Cancel</button>
+      <button class="btn-save" onclick="savePricing()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -387,6 +435,7 @@
     if (name === 'messages')     loadMessages();
     if (name === 'testimonials') loadTestimonials();
     if (name === 'projects')     loadProjects();
+    if (name === 'pricing')      loadPricing();
   }
 
   // ── TOAST ──
@@ -658,6 +707,75 @@
     await fetch(`/api/admin/projects/${id}`, { method:'DELETE' });
     showToast('Project deleted');
     loadProjects();
+  }
+
+  // ── PRICING ──
+  async function loadPricing() {
+    try {
+      const res  = await fetch('/api/admin/pricing');
+      const data = await res.json();
+      const rows = data.data || [];
+      const tbody = document.getElementById('pricingTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><p>No pricing added yet.</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.service}</strong></td>
+          <td style="color:#4ade80;font-weight:700">${r.price}</td>
+          <td style="color:#94a3b8">per ${r.period || 'project'}</td>
+          <td style="color:#94a3b8">${r.features ? r.features.length + ' items' : 'None'}</td>
+          <td>${r.highlighted ? '<span class="badge badge-replied">Yes</span>' : '<span class="badge badge-read">No</span>'}</td>
+          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
+          <td><div class="actions">
+            <button class="action-btn btn-edit" onclick='editPricing(${JSON.stringify(r)})'>Edit</button>
+            <button class="action-btn btn-delete" onclick="deletePricing('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function openPricingModal(p = null) {
+    document.getElementById('pricingModalTitle').textContent = p ? 'Edit Pricing' : 'Add Pricing';
+    document.getElementById('prId').value          = p ? p._id : '';
+    document.getElementById('prService').value     = p ? p.service : '';
+    document.getElementById('prPrice').value       = p ? p.price : '';
+    document.getElementById('prPeriod').value      = p ? p.period : 'project';
+    document.getElementById('prDescription').value = p ? p.description : '';
+    document.getElementById('prFeatures').value    = p && p.features ? p.features.join('\n') : '';
+    document.getElementById('prHighlighted').checked = p ? p.highlighted : false;
+    document.getElementById('pricingModal').style.display = 'flex';
+  }
+
+  function editPricing(p) { openPricingModal(p); }
+
+  async function savePricing() {
+    const id      = document.getElementById('prId').value;
+    const featuresRaw = document.getElementById('prFeatures').value;
+    const features = featuresRaw.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+    const payload = {
+      service:     document.getElementById('prService').value.trim(),
+      price:       document.getElementById('prPrice').value.trim(),
+      period:      document.getElementById('prPeriod').value.trim() || 'project',
+      description: document.getElementById('prDescription').value.trim(),
+      features,
+      highlighted: document.getElementById('prHighlighted').checked
+    };
+    if (!payload.service || !payload.price) return showToast('Service name and price are required', 'error');
+    const url    = id ? `/api/admin/pricing/${id}` : '/api/admin/pricing';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeModal('pricingModal');
+    showToast(id ? 'Pricing updated' : 'Pricing added');
+    loadPricing();
+  }
+
+  async function deletePricing(id) {
+    if (!confirm('Delete this pricing?')) return;
+    await fetch(`/api/admin/pricing/${id}`, { method:'DELETE' });
+    showToast('Pricing deleted');
+    loadPricing();
   }
 
   // Close modals on overlay click

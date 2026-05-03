@@ -308,4 +308,52 @@ async function loadProjects() {
 // Run on page load
 loadTestimonials();
 loadProjects();
+loadPricing();
+
+/* ─── Load pricing from database ─── */
+async function loadPricing() {
+  try {
+    const res  = await fetch('/api/pricing');
+    const data = await res.json();
+    if (!data.success || !data.data || data.data.length === 0) {
+      document.getElementById('pricingGrid').innerHTML =
+        `<div style="text-align:center;padding:60px;color:var(--text-tertiary);grid-column:span 3;font-size:0.9rem">No pricing added yet. Add prices from your admin panel.</div>`;
+      return;
+    }
+
+    const cols = data.data.length === 1 ? 1 : data.data.length === 2 ? 2 : 3;
+    document.getElementById('pricingGrid').style.gridTemplateColumns = `repeat(${Math.min(cols, 3)}, 1fr)`;
+
+    document.getElementById('pricingGrid').innerHTML = data.data.map(p => `
+      <div style="
+        background: ${p.highlighted ? 'linear-gradient(145deg, rgba(37,99,235,0.15), rgba(56,189,248,0.08))' : 'var(--surface-1)'};
+        border: 1px solid ${p.highlighted ? 'rgba(37,99,235,0.4)' : 'var(--border-1)'};
+        border-radius: 20px;
+        padding: 36px 32px;
+        position: relative;
+        transition: transform 0.3s, box-shadow 0.3s;
+      " onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.4)'"
+         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+        ${p.highlighted ? `<div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--cobalt);color:#fff;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 16px;border-radius:100px">Most Popular</div>` : ''}
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px">${p.service}</div>
+        <div style="font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;color:var(--text-primary);line-height:1;margin-bottom:4px">${p.price}</div>
+        <div style="font-size:0.8rem;color:var(--text-tertiary);margin-bottom:20px">per ${p.period || 'project'}</div>
+        ${p.description ? `<p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border-1)">${p.description}</p>` : ''}
+        ${p.features && p.features.length ? `
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px">
+            ${p.features.map(f => `
+              <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.855rem;color:var(--text-secondary)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;margin-top:2px"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                ${f}
+              </li>`).join('')}
+          </ul>` : ''}
+        <a href="#contact" style="display:block;text-align:center;padding:13px;border-radius:10px;font-size:0.875rem;font-weight:700;text-decoration:none;transition:all 0.25s;background:${p.highlighted ? 'var(--cobalt)' : 'var(--surface-2)'};color:${p.highlighted ? '#fff' : 'var(--text-secondary)'};border:1px solid ${p.highlighted ? 'var(--cobalt)' : 'var(--border-2)'}">
+          Get Started
+        </a>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.log('Pricing load error:', err);
+  }
+}
 

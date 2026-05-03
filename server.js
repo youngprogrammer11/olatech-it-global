@@ -50,6 +50,16 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/admin', require('./routes/admin'));
 
 // Public routes for testimonials and projects (for the frontend)
+app.get('/api/pricing', async (req, res) => {
+  try {
+    const Pricing = require('./models/Pricing');
+    const data = await Pricing.find({ active: true }).sort({ order: 1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, data: [] });
+  }
+});
+
 app.get('/api/testimonials', async (req, res) => {
   try {
     const Testimonial = require('./models/Testimonial');
