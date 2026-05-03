@@ -320,13 +320,21 @@
       <!-- Visual col -->
       <div class="about-visual-col reveal left">
         <div class="about-frame">
-          <div class="about-main-card">
+          <div class="about-main-card" id="aboutPhotoCard">
             <div class="about-inner-grid"></div>
-            <div class="about-logo-display">
+            <!-- Photo will show here when uploaded. Placeholder shown until then -->
+            <div class="about-logo-display" id="aboutPlaceholder">
               <div class="about-logo-ring">O</div>
               <div class="about-logo-name">Olatech IT Global</div>
               <div class="about-logo-tagline">Engineering Excellence Since 2017</div>
             </div>
+            <!-- Real photo - hidden until src is set -->
+            <img
+              id="aboutPhoto"
+              src=""
+              alt="Olakanmi Quadri - Founder, Olatech IT Global"
+              style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;z-index:1"
+            />
           </div>
           <div class="float-card float-card--tl">
             <div class="float-num" data-count="150">0</div>
@@ -418,7 +426,7 @@
 
 
 <!-- ═══════════════════════ PORTFOLIO ═══════════════════════ -->
-<section id="portfolio" class="section">
+<section id="portfolio" class="section" style="background:var(--ink)">
   <div class="container">
     <div class="portfolio-header">
       <div class="portfolio-header-left reveal">
@@ -538,7 +546,7 @@
 
 
 <!-- ═══════════════════════ PRICING ═══════════════════════ -->
-<section id="pricing" class="section" style="background:var(--ink-2)">
+<section id="pricing" class="section" style="background:var(--ink-2);border-top:1px solid var(--border-1)">
   <div class="container">
     <div class="reveal" style="text-align:center;max-width:560px;margin:0 auto 64px">
       <div class="eyebrow" style="margin-bottom:16px;">Pricing</div>
@@ -552,7 +560,7 @@
       </div>
     </div>
     <p class="reveal" style="text-align:center;margin-top:36px;font-size:0.85rem;color:var(--text-tertiary)">
-      Every project is different. If your idea doesn’t fit into these plans, request a custom quote and let’s build something tailored to you..
+      All prices are in Nigerian Naira unless stated otherwise. We also accept USD and GBP.
       <a href="#contact" style="color:var(--text-accent);margin-left:6px">Get a custom quote</a>
     </p>
   </div>
