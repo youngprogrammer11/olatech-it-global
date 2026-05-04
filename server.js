@@ -50,6 +50,37 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/admin', require('./routes/admin'));
 
 // Public routes for testimonials and projects (for the frontend)
+// Public blog endpoints
+app.get('/api/blog', async (req, res) => {
+  try {
+    const Blog = require('./models/Blog');
+    const data = await Blog.find({ published: true }).sort({ createdAt: -1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, data: [] });
+  }
+});
+
+app.get('/api/blog/:slug', async (req, res) => {
+  try {
+    const Blog = require('./models/Blog');
+    const post = await Blog.findOne({ slug: req.params.slug, published: true });
+    if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
+    res.json({ success: true, data: post });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Serve blog pages
+app.get('/blog', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'blog.html'));
+});
+
+app.get('/blog/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'blog-post.html'));
+});
+
 app.get('/api/pricing', async (req, res) => {
   try {
     const Pricing = require('./models/Pricing');

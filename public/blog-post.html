@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">Article — Olatech IT Global</title>
+  <meta name="description" id="pageDesc" content="Read this article from Olatech IT Global." />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <style>
+    .post-hero {
+      padding: 160px 0 72px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-1);
+    }
+    .post-hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(37,99,235,0.12) 0%, transparent 60%);
+    }
+    .post-hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .post-hero-content { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; text-align: center; }
+    .post-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .post-back:hover { color: var(--text-primary); }
+    .post-cat {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-accent);
+      margin-bottom: 16px;
+    }
+    .post-title {
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .post-meta {
+      display: flex; align-items: center; justify-content: center; gap: 20px;
+      font-size: 0.82rem; color: var(--text-tertiary);
+      flex-wrap: wrap;
+    }
+    .post-meta span { display: flex; align-items: center; gap: 6px; }
+
+    /* Article body */
+    .post-body { padding: 72px 0 100px; background: var(--ink); }
+    .post-content {
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+    .post-content h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin: 52px 0 18px;
+      line-height: 1.2;
+    }
+    .post-content h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 36px 0 14px;
+    }
+    .post-content p { margin-bottom: 22px; }
+    .post-content ul, .post-content ol {
+      padding-left: 24px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .post-content li { color: var(--text-secondary); }
+    .post-content strong { color: var(--text-primary); font-weight: 600; }
+    .post-content a { color: var(--cobalt-soft); text-decoration: underline; text-underline-offset: 3px; }
+    .post-content blockquote {
+      border-left: 3px solid var(--cobalt);
+      padding: 16px 24px;
+      margin: 32px 0;
+      background: var(--surface-1);
+      border-radius: 0 10px 10px 0;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+    .post-content hr {
+      border: none;
+      border-top: 1px solid var(--border-1);
+      margin: 48px 0;
+    }
+
+    /* CTA at bottom of post */
+    .post-cta {
+      max-width: 720px;
+      margin: 0 auto;
+      background: linear-gradient(145deg, var(--ink-3), rgba(37,99,235,0.12));
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 48px;
+      text-align: center;
+    }
+    .post-cta h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .post-cta p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+    .post-cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* Not found state */
+    .post-not-found {
+      text-align: center;
+      padding: 120px 20px;
+      color: var(--text-tertiary);
+    }
+    .post-not-found h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; }
+    .post-not-found p { font-size: 0.9rem; margin-bottom: 28px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="logo-gem">O</div>
+        <span class="logo-name">Olatech <em>IT Global</em></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/#portfolio">Portfolio</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
+        <li><a href="/blog" class="active">Blog</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="/#contact" class="btn btn--primary">Start a Project</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/#about" onclick="closeMobile()">About</a>
+  <a href="/#services" onclick="closeMobile()">Services</a>
+  <a href="/#portfolio" onclick="closeMobile()">Portfolio</a>
+  <a href="/blog" onclick="closeMobile()">Blog</a>
+  <a href="/#contact" onclick="closeMobile()">Contact</a>
+  <a href="/#contact" class="btn btn--primary btn--lg" onclick="closeMobile()">Start a Project</a>
+</div>
+
+<!-- POST HERO -->
+<div class="post-hero" id="postHero" style="background:var(--ink-2)">
+  <div class="post-hero-bg"></div>
+  <div class="post-hero-grid"></div>
+  <div class="container">
+    <div class="post-hero-content" id="postHeroContent">
+      <!-- Loaded by JS -->
+      <div style="color:var(--text-tertiary);font-size:0.9rem">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- POST BODY -->
+<section class="post-body">
+  <div class="container">
+    <div class="post-content" id="postContent">
+      <!-- Loaded by JS -->
+    </div>
+    <div class="post-cta" id="postCta" style="display:none;margin-top:64px">
+      <h3>Need help with your business technology?</h3>
+      <p>We build websites, software, and run digital marketing for businesses in Nigeria and beyond. Tell us what you need and we will get back to you within 24 hours.</p>
+      <div class="post-cta-btns">
+        <a href="/#contact" class="btn btn--primary btn--lg">Start a Project</a>
+        <a href="https://wa.me/2348138916673" target="_blank" class="btn btn--ghost btn--lg">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp Us
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo" style="margin-bottom:18px;display:inline-flex">
+          <div class="logo-gem">O</div>
+          <span class="logo-name">Olatech <em>IT Global</em></span>
+        </a>
+        <p>We build websites, software, and digital products for businesses in Nigeria and around the world.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="/#about">About Us</a></li>
+          <li><a href="/#portfolio">Portfolio</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="/#services">Web Development</a></li>
+          <li><a href="/#services">Software Dev</a></li>
+          <li><a href="/#services">IT Consulting</a></li>
+          <li><a href="/#services">Digital Marketing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:info@olatechitglobal.com">info@olatechitglobal.com</a></li>
+          <li><a href="tel:+2348138916673">+234 813 891 6673</a></li>
+          <li><a href="https://wa.me/2348138916673" target="_blank">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© <span id="year"></span> <strong>Olatech IT Global</strong>. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Navbar
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+  // Mobile menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  function closeMobile() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Get slug from URL
+  const slug = window.location.pathname.replace('/blog/', '').replace('/blog', '');
+
+  async function loadPost() {
+    try {
+      const res  = await fetch(`/api/blog/${slug}`);
+      const data = await res.json();
+
+      if (!data.success || !data.data) {
+        document.getElementById('postHeroContent').innerHTML = `
+          <div class="post-not-found">
+            <h2>Article not found</h2>
+            <p>This article does not exist or has been removed.</p>
+            <a href="/blog" class="btn btn--primary">Back to Blog</a>
+          </div>`;
+        document.getElementById('postContent').innerHTML = '';
+        return;
+      }
+
+      const post = data.data;
+
+      // Update page title and meta
+      document.getElementById('pageTitle').textContent = `${post.title} — Olatech IT Global`;
+      document.getElementById('pageDesc').setAttribute('content', post.excerpt);
+
+      // Update hero background
+      document.getElementById('postHero').style.background = post.coverColor || 'var(--ink-2)';
+
+      // Render hero
+      document.getElementById('postHeroContent').innerHTML = `
+        <a href="/blog" class="post-back">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Back to Blog
+        </a>
+        <div class="post-cat">${post.category || 'Technology'}</div>
+        <h1 class="post-title">${post.title}</h1>
+        <div class="post-meta">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5"/></svg>
+            ${new Date(post.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}
+          </span>
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            ${Math.max(1, Math.ceil(post.content.split(' ').length / 200))} min read
+          </span>
+          <span>Olatech IT Global</span>
+        </div>
+      `;
+
+      // Render content - convert simple markdown-like syntax
+      let html = post.content
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+        .replace(/^---$/gm, '<hr>')
+        .split('\n\n')
+        .map(p => p.trim())
+        .filter(p => p)
+        .map(p => {
+          if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<blockquote') || p.startsWith('<hr')) return p;
+          return `<p>${p}</p>`;
+        })
+        .join('\n');
+
+      document.getElementById('postContent').innerHTML = html;
+      document.getElementById('postCta').style.display = 'block';
+
+    } catch (err) {
+      document.getElementById('postHeroContent').innerHTML = `
+        <div class="post-not-found">
+          <h2>Could not load article</h2>
+          <p>Please try again or go back to the blog.</p>
+          <a href="/blog" class="btn btn--primary">Back to Blog</a>
+        </div>`;
+    }
+  }
+
+  loadPost();
+</script>
+
+</body>
+</html>

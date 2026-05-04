@@ -175,6 +175,10 @@
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
       </div>
+      <div class="nav-item" onclick="showPage('blog')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        Blog
+      </div>
     </div>
 
     <!-- Main -->
@@ -257,6 +261,26 @@
           <table>
             <thead><tr><th>Service</th><th>Price</th><th>Period</th><th>Features</th><th>Popular</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="pricingTable"><tr><td colspan="7" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BLOG PAGE -->
+      <div class="page" id="page-blog">
+        <div class="page-header">
+          <div>
+            <h2>Blog Articles</h2>
+            <p>Write and publish articles that show on your website</p>
+          </div>
+          <button class="add-btn" onclick="openBlogModal()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Write Article
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>Category</th><th>Slug / URL</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="blogTable"><tr><td colspan="6" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -408,6 +432,47 @@
   </div>
 </div>
 
+<!-- BLOG MODAL -->
+<div class="modal-overlay" id="blogModal" style="display:none">
+  <div class="modal" style="max-width:700px">
+    <h3 id="blogModalTitle">Write Article</h3>
+    <input type="hidden" id="blId" />
+    <div class="form-group"><label>Title *</label><input id="blTitle" placeholder="e.g. 5 Signs Your Business Needs a New Website" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label><input id="blCategory" placeholder="e.g. Web Development, Business, Tips" /></div>
+      <div class="form-group">
+        <label>Cover Colour</label>
+        <select id="blCoverColor">
+          <option value="linear-gradient(135deg,#05101f,#0a1f5c)">Dark Blue</option>
+          <option value="linear-gradient(135deg,#050f1a,#0a3d5c)">Cyan</option>
+          <option value="linear-gradient(135deg,#120a20,#2d0e5c)">Purple</option>
+          <option value="linear-gradient(135deg,#0a150a,#0a3d1a)">Green</option>
+          <option value="linear-gradient(135deg,#1a0a0a,#5c1a1a)">Red</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Short Description * (shown on blog listing page)</label>
+      <textarea id="blExcerpt" placeholder="A one or two sentence summary of what the article covers" style="min-height:80px"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Article Content *</label>
+      <div style="font-size:0.75rem;color:#475569;margin-bottom:8px">
+        Use ## for headings, ### for subheadings, **bold** for bold text, - for bullet points, > for quotes, --- for dividers
+      </div>
+      <textarea id="blContent" placeholder="Write your full article here..." style="min-height:300px;font-family:monospace;font-size:0.83rem;line-height:1.7"></textarea>
+    </div>
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:12px">
+      <input type="checkbox" id="blPublished" style="width:auto;accent-color:#2563eb" />
+      <label for="blPublished" style="margin:0;cursor:pointer">Publish immediately (unchecked = save as draft)</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('blogModal')">Cancel</button>
+      <button class="btn-save" onclick="saveBlog()">Save Article</button>
+    </div>
+  </div>
+</div>
+
 <!-- PRICING MODAL -->
 <div class="modal-overlay" id="pricingModal" style="display:none">
   <div class="modal">
@@ -488,6 +553,7 @@
     if (name === 'testimonials') loadTestimonials();
     if (name === 'projects')     loadProjects();
     if (name === 'pricing')      loadPricing();
+    if (name === 'blog')         loadBlog();
     if (name === 'settings')     loadSettings();
   }
 
@@ -829,6 +895,75 @@
     await fetch(`/api/admin/pricing/${id}`, { method:'DELETE' });
     showToast('Pricing deleted');
     loadPricing();
+  }
+
+  // ── BLOG ──
+  async function loadBlog() {
+    try {
+      const res  = await fetch('/api/admin/blog');
+      const data = await res.json();
+      const rows = data.data || [];
+      const tbody = document.getElementById('blogTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><p>No articles yet. Write your first one.</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.title}</strong></td>
+          <td><span class="badge badge-new">${r.category || 'General'}</span></td>
+          <td style="color:#64748b;font-size:0.78rem">/blog/${r.slug}</td>
+          <td><span class="badge ${r.published ? 'badge-replied' : 'badge-read'}">${r.published ? 'Published' : 'Draft'}</span></td>
+          <td style="color:#64748b;white-space:nowrap">${new Date(r.createdAt).toLocaleDateString('en-GB')}</td>
+          <td><div class="actions">
+            <a href="/blog/${r.slug}" target="_blank" class="action-btn btn-view">View</a>
+            <button class="action-btn btn-edit" onclick='editBlog(${JSON.stringify(r)})'>Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteBlog('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function openBlogModal(b = null) {
+    document.getElementById('blogModalTitle').textContent = b ? 'Edit Article' : 'Write Article';
+    document.getElementById('blId').value          = b ? b._id : '';
+    document.getElementById('blTitle').value       = b ? b.title : '';
+    document.getElementById('blCategory').value    = b ? b.category : '';
+    document.getElementById('blCoverColor').value  = b ? b.coverColor : 'linear-gradient(135deg,#05101f,#0a1f5c)';
+    document.getElementById('blExcerpt').value     = b ? b.excerpt : '';
+    document.getElementById('blContent').value     = b ? b.content : '';
+    document.getElementById('blPublished').checked = b ? b.published : false;
+    document.getElementById('blogModal').style.display = 'flex';
+  }
+
+  function editBlog(b) { openBlogModal(b); }
+
+  async function saveBlog() {
+    const id      = document.getElementById('blId').value;
+    const payload = {
+      title:      document.getElementById('blTitle').value.trim(),
+      category:   document.getElementById('blCategory').value.trim() || 'Technology',
+      coverColor: document.getElementById('blCoverColor').value,
+      excerpt:    document.getElementById('blExcerpt').value.trim(),
+      content:    document.getElementById('blContent').value.trim(),
+      published:  document.getElementById('blPublished').checked
+    };
+    if (!payload.title || !payload.excerpt || !payload.content) {
+      return showToast('Title, description, and content are required', 'error');
+    }
+    const url    = id ? `/api/admin/blog/${id}` : '/api/admin/blog';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeModal('blogModal');
+    showToast(id ? 'Article updated' : 'Article saved');
+    loadBlog();
+  }
+
+  async function deleteBlog(id) {
+    if (!confirm('Delete this article?')) return;
+    await fetch(`/api/admin/blog/${id}`, { method:'DELETE' });
+    showToast('Article deleted');
+    loadBlog();
   }
 
   // ── SETTINGS / ABOUT PHOTO ──

@@ -6,6 +6,7 @@ const Contact    = require('../models/Contact');
 const Testimonial = require('../models/Testimonial');
 const Project    = require('../models/Project');
 const Pricing    = require('../models/Pricing');
+const Blog       = require('../models/Blog');
 
 // ─── LOGIN ───────────────────────────────────────────
 router.post('/login', async (req, res) => {
@@ -173,6 +174,60 @@ router.put('/pricing/:id', requireAuth, async (req, res) => {
 router.delete('/pricing/:id', requireAuth, async (req, res) => {
   try {
     await Pricing.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── BLOG ─────────────────────────────────────────────
+router.get('/blog', requireAuth, async (req, res) => {
+  try {
+    const data = await Blog.find().sort({ createdAt: -1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/blog', requireAuth, async (req, res) => {
+  try {
+    const { title, excerpt, content, category, coverColor, published } = req.body;
+    // Generate slug from title
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+
+    // Check slug is unique
+    const exists = await Blog.findOne({ slug });
+    const finalSlug = exists ? `${slug}-${Date.now()}` : slug;
+
+    const item = await Blog.create({ title, slug: finalSlug, excerpt, content, category, coverColor, published });
+    res.status(201).json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put('/blog/:id', requireAuth, async (req, res) => {
+  try {
+    const item = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, updatedAt: Date.now() },
+      { new: true }
+    );
+    res.json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/blog/:id', requireAuth, async (req, res) => {
+  try {
+    await Blog.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

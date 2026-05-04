@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Tech insights, tips, and articles from Olatech IT Global." />
+  <title>Blog — Olatech IT Global</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <style>
+    .blog-hero {
+      padding: 160px 0 80px;
+      background: var(--ink-2);
+      border-bottom: 1px solid var(--border-1);
+      position: relative;
+      overflow: hidden;
+    }
+    .blog-hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .blog-hero-content { position: relative; z-index: 1; max-width: 640px; }
+    .blog-hero-content .eyebrow { margin-bottom: 20px; }
+    .blog-hero-content h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .blog-hero-content p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+
+    .blog-section { padding: var(--space-2xl) 0; background: var(--ink); }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .blog-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border-1);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.35s var(--ease-out), border-color 0.3s, box-shadow 0.35s;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--border-3);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .blog-card-cover {
+      aspect-ratio: 16/9;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .blog-card-cover-bg {
+      position: absolute; inset: 0;
+    }
+    .blog-card-cover-icon {
+      position: relative; z-index: 1;
+      text-align: center;
+    }
+    .blog-card-cover-icon svg {
+      width: 36px; height: 36px;
+      color: rgba(255,255,255,0.3);
+      margin: 0 auto 8px;
+    }
+    .blog-card-cover-icon span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .blog-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .blog-card-cat {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-accent);
+      margin-bottom: 10px;
+    }
+    .blog-card-title {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .blog-card-excerpt {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 20px;
+    }
+    .blog-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-1);
+    }
+    .blog-card-date {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+    .blog-card-read {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--cobalt-soft);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: gap 0.2s;
+    }
+    .blog-card:hover .blog-card-read { gap: 8px; }
+
+    .blog-empty {
+      grid-column: span 3;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-tertiary);
+    }
+    .blog-empty svg {
+      width: 48px; height: 48px;
+      margin: 0 auto 16px;
+      opacity: 0.3;
+    }
+    .blog-empty h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .blog-empty p { font-size: 0.875rem; }
+
+    @media (max-width: 1024px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .blog-grid { grid-template-columns: 1fr; } .blog-empty { grid-column: span 1; } }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="logo-gem">O</div>
+        <span class="logo-name">Olatech <em>IT Global</em></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/#portfolio">Portfolio</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
+        <li><a href="/blog" class="active">Blog</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="/#contact" class="btn btn--primary">Start a Project</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/#about" onclick="closeMobile()">About</a>
+  <a href="/#services" onclick="closeMobile()">Services</a>
+  <a href="/#portfolio" onclick="closeMobile()">Portfolio</a>
+  <a href="/#pricing" onclick="closeMobile()">Pricing</a>
+  <a href="/blog" onclick="closeMobile()">Blog</a>
+  <a href="/#contact" onclick="closeMobile()">Contact</a>
+  <a href="/#contact" class="btn btn--primary btn--lg" onclick="closeMobile()">Start a Project</a>
+</div>
+
+<!-- HERO -->
+<div class="blog-hero">
+  <div class="container">
+    <div class="blog-hero-content">
+      <div class="eyebrow">Blog</div>
+      <h1>Tech insights from <span style="font-family:var(--font-serif);font-style:italic;font-weight:400;background:var(--grad-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">our team</span></h1>
+      <p>Practical articles about web development, digital marketing, and running a business online in Nigeria and beyond. No jargon, no fluff.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BLOG GRID -->
+<section class="blog-section">
+  <div class="container">
+    <div class="blog-grid" id="blogGrid">
+      <div class="blog-empty">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        <h3>No articles yet</h3>
+        <p>Check back soon. Our first articles are on the way.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo" style="margin-bottom:18px;display:inline-flex">
+          <div class="logo-gem">O</div>
+          <span class="logo-name">Olatech <em>IT Global</em></span>
+        </a>
+        <p>We build websites, software, and digital products for businesses in Nigeria and around the world.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="/#about">About Us</a></li>
+          <li><a href="/#portfolio">Portfolio</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="/#services">Web Development</a></li>
+          <li><a href="/#services">Software Dev</a></li>
+          <li><a href="/#services">IT Consulting</a></li>
+          <li><a href="/#services">Digital Marketing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:info@olatechitglobal.com">info@olatechitglobal.com</a></li>
+          <li><a href="tel:+2348138916673">+234 813 891 6673</a></li>
+          <li><a href="https://wa.me/2348138916673" target="_blank">WhatsApp</a></li>
+          <li><a href="/#contact">Lagos, Nigeria</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© <span id="year"></span> <strong>Olatech IT Global</strong>. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+  // Mobile menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  function closeMobile() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const colors = [
+    'linear-gradient(135deg,#05101f,#0a1f5c)',
+    'linear-gradient(135deg,#050f1a,#0a3d5c)',
+    'linear-gradient(135deg,#120a20,#2d0e5c)',
+    'linear-gradient(135deg,#0a150a,#0a3d1a)',
+    'linear-gradient(135deg,#1a0a0a,#5c1a1a)',
+    'linear-gradient(135deg,#151005,#4a3005)',
+  ];
+
+  // Load blog posts
+  async function loadBlog() {
+    try {
+      const res  = await fetch('/api/blog');
+      const data = await res.json();
+      if (!data.success || !data.data || data.data.length === 0) return;
+
+      const grid = document.getElementById('blogGrid');
+      grid.innerHTML = data.data.map((post, i) => `
+        <a href="/blog/${post.slug}" class="blog-card">
+          <div class="blog-card-cover">
+            <div class="blog-card-cover-bg" style="background:${post.coverColor || colors[i % colors.length]}"></div>
+            <div class="blog-card-cover-icon">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+              </svg>
+              <span>${post.category || 'Article'}</span>
+            </div>
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-card-cat">${post.category || 'Technology'}</div>
+            <div class="blog-card-title">${post.title}</div>
+            <div class="blog-card-excerpt">${post.excerpt}</div>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">${new Date(post.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}</span>
+              <span class="blog-card-read">
+                Read article
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </span>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    } catch (err) {
+      console.log('Blog load error:', err);
+    }
+  }
+
+  loadBlog();
+</script>
+
+</body>
+</html>
