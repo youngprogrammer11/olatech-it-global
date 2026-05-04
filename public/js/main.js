@@ -72,7 +72,9 @@ const countObs = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.5 });
 
-document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
+function startCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
+}
 
 /* ─── Portfolio filter ─── */
 const filterBtns   = document.querySelectorAll('.f-btn');
@@ -314,27 +316,30 @@ loadHeroStats();
 
 /* ─── Load hero stats from database ─── */
 async function loadHeroStats() {
-  try {
-    const stats = [
-      { key: 'statProjects',     selector: '[data-count="150"]' },
-      { key: 'statSatisfaction', selector: '[data-count="98"]'  },
-      { key: 'statCountries',    selector: '[data-count="12"]'  },
-      { key: 'statYears',        selector: '[data-count="8"]'   },
-    ];
+  const statMap = [
+    { key: 'statProjects',     fallback: '150', selectors: ['[data-count="150"]'] },
+    { key: 'statSatisfaction', fallback: '98',  selectors: ['[data-count="98"]']  },
+    { key: 'statCountries',    fallback: '12',  selectors: ['[data-count="12"]']  },
+    { key: 'statYears',        fallback: '8',   selectors: ['[data-count="8"]']   },
+  ];
 
-    for (const s of stats) {
-      try {
-        const res  = await fetch(`/api/settings/${s.key}`);
-        const data = await res.json();
-        if (data.success && data.data && data.data.value) {
-          const el = document.querySelector(s.selector);
-          if (el) el.dataset.count = data.data.value;
-        }
-      } catch (err) {}
-    }
-  } catch (err) {
-    console.log('Using default stats');
+  for (const s of statMap) {
+    try {
+      const res  = await fetch(`/api/settings/${s.key}`);
+      const data = await res.json();
+      if (data.success && data.data && data.data.value) {
+        // Update all elements that had the old fallback value
+        document.querySelectorAll('[data-count]').forEach(el => {
+          if (el.dataset.count === s.fallback) {
+            el.dataset.count = data.data.value;
+          }
+        });
+      }
+    } catch (err) {}
   }
+
+  // Now start the counters after all values are updated
+  startCounters();
 }
 
 /* ─── Load about photo from database ─── */
