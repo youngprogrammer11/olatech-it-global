@@ -310,6 +310,32 @@ loadTestimonials();
 loadProjects();
 loadPricing();
 loadAboutPhoto();
+loadHeroStats();
+
+/* ─── Load hero stats from database ─── */
+async function loadHeroStats() {
+  try {
+    const stats = [
+      { key: 'statProjects',     selector: '[data-count="150"]' },
+      { key: 'statSatisfaction', selector: '[data-count="98"]'  },
+      { key: 'statCountries',    selector: '[data-count="12"]'  },
+      { key: 'statYears',        selector: '[data-count="8"]'   },
+    ];
+
+    for (const s of stats) {
+      try {
+        const res  = await fetch(`/api/settings/${s.key}`);
+        const data = await res.json();
+        if (data.success && data.data && data.data.value) {
+          const el = document.querySelector(s.selector);
+          if (el) el.dataset.count = data.data.value;
+        }
+      } catch (err) {}
+    }
+  } catch (err) {
+    console.log('Using default stats');
+  }
+}
 
 /* ─── Load about photo from database ─── */
 async function loadAboutPhoto() {

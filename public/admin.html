@@ -290,9 +290,36 @@
         <div class="page-header">
           <div>
             <h2>Settings</h2>
-            <p>Manage your about photo and other site settings</p>
+            <p>Manage your site stats, about photo, and other settings</p>
           </div>
         </div>
+
+        <!-- Hero Stats -->
+        <div class="table-wrap" style="padding:32px;border-radius:16px;margin-bottom:24px">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">Hero Stats</h3>
+          <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">These are the four numbers shown on your homepage. Update them to reflect your real achievements.</p>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+            <div>
+              <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Projects Delivered</label>
+              <input id="statProjects" type="number" placeholder="150" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#60a5fa;outline:none;font-family:inherit" />
+            </div>
+            <div>
+              <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Client Satisfaction %</label>
+              <input id="statSatisfaction" type="number" placeholder="98" max="100" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#60a5fa;outline:none;font-family:inherit" />
+            </div>
+            <div>
+              <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Countries Served</label>
+              <input id="statCountries" type="number" placeholder="12" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#60a5fa;outline:none;font-family:inherit" />
+            </div>
+            <div>
+              <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Years of Excellence</label>
+              <input id="statYears" type="number" placeholder="8" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#60a5fa;outline:none;font-family:inherit" />
+            </div>
+          </div>
+          <button class="btn-save" onclick="saveStats()" style="padding:11px 28px">Save Stats</button>
+        </div>
+
+        <!-- About Photo -->
         <div class="table-wrap" style="padding:32px;border-radius:16px">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">About Section Photo</h3>
           <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">This photo shows in the About section of your website. Use a clear, well-lit photo of yourself.</p>
@@ -970,6 +997,7 @@
   let aboutPhotoData = '';
 
   async function loadSettings() {
+    // Load about photo
     try {
       const res  = await fetch('/api/admin/settings/aboutPhoto');
       const data = await res.json();
@@ -980,8 +1008,45 @@
         document.getElementById('aboutUploadPrompt').style.display = 'none';
         document.getElementById('aboutUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
       }
+    } catch (err) {}
+
+    // Load stats
+    const statKeys = [
+      { key: 'statProjects',     id: 'statProjects',     fallback: '150' },
+      { key: 'statSatisfaction', id: 'statSatisfaction', fallback: '98'  },
+      { key: 'statCountries',    id: 'statCountries',    fallback: '12'  },
+      { key: 'statYears',        id: 'statYears',        fallback: '8'   },
+    ];
+    for (const s of statKeys) {
+      try {
+        const res  = await fetch(`/api/admin/settings/${s.key}`);
+        const data = await res.json();
+        const el   = document.getElementById(s.id);
+        if (el) el.value = (data.success && data.data) ? data.data.value : s.fallback;
+      } catch (err) {}
+    }
+  }
+
+  async function saveStats() {
+    const stats = [
+      { key: 'statProjects',     id: 'statProjects'     },
+      { key: 'statSatisfaction', id: 'statSatisfaction' },
+      { key: 'statCountries',    id: 'statCountries'    },
+      { key: 'statYears',        id: 'statYears'        },
+    ];
+    try {
+      for (const s of stats) {
+        const val = document.getElementById(s.id).value.trim();
+        if (!val) continue;
+        await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: s.key, value: val })
+        });
+      }
+      showToast('Stats saved. They will update on your website.');
     } catch (err) {
-      console.error('Failed to load settings:', err);
+      showToast('Failed to save stats', 'error');
     }
   }
 
