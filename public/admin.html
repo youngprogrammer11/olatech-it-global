@@ -969,14 +969,19 @@
   // ── SETTINGS / ABOUT PHOTO ──
   let aboutPhotoData = '';
 
-  function loadSettings() {
-    const saved = localStorage.getItem('aboutPhotoData');
-    if (saved) {
-      aboutPhotoData = saved;
-      document.getElementById('aboutPreviewImg').src = saved;
-      document.getElementById('aboutUploadPreview').style.display = 'block';
-      document.getElementById('aboutUploadPrompt').style.display = 'none';
-      document.getElementById('aboutUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
+  async function loadSettings() {
+    try {
+      const res  = await fetch('/api/admin/settings/aboutPhoto');
+      const data = await res.json();
+      if (data.success && data.data && data.data.value) {
+        aboutPhotoData = data.data.value;
+        document.getElementById('aboutPreviewImg').src = aboutPhotoData;
+        document.getElementById('aboutUploadPreview').style.display = 'block';
+        document.getElementById('aboutUploadPrompt').style.display = 'none';
+        document.getElementById('aboutUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
+      }
+    } catch (err) {
+      console.error('Failed to load settings:', err);
     }
   }
 
@@ -1001,20 +1006,37 @@
     reader.readAsDataURL(file);
   }
 
-  function saveAboutPhoto() {
+  async function saveAboutPhoto() {
     if (!aboutPhotoData) return showToast('Please select a photo first', 'error');
-    localStorage.setItem('aboutPhotoData', aboutPhotoData);
-    showToast('Photo saved successfully');
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'aboutPhoto', value: aboutPhotoData })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Photo saved. It will show on all browsers now.');
+      } else {
+        showToast('Failed to save photo', 'error');
+      }
+    } catch (err) {
+      showToast('Failed to save photo', 'error');
+    }
   }
 
-  function clearAboutPhoto() {
-    aboutPhotoData = '';
-    localStorage.removeItem('aboutPhotoData');
-    document.getElementById('aboutPhotoInput').value = '';
-    document.getElementById('aboutUploadPreview').style.display = 'none';
-    document.getElementById('aboutUploadPrompt').style.display = 'block';
-    document.getElementById('aboutUploadArea').style.borderColor = 'rgba(255,255,255,0.1)';
-    showToast('Photo removed');
+  async function clearAboutPhoto() {
+    try {
+      await fetch('/api/admin/settings/aboutPhoto', { method: 'DELETE' });
+      aboutPhotoData = '';
+      document.getElementById('aboutPhotoInput').value = '';
+      document.getElementById('aboutUploadPreview').style.display = 'none';
+      document.getElementById('aboutUploadPrompt').style.display = 'block';
+      document.getElementById('aboutUploadArea').style.borderColor = 'rgba(255,255,255,0.1)';
+      showToast('Photo removed');
+    } catch (err) {
+      showToast('Failed to remove photo', 'error');
+    }
   }
 
   // Close modals on overlay click

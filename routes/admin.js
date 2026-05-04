@@ -7,6 +7,7 @@ const Testimonial = require('../models/Testimonial');
 const Project    = require('../models/Project');
 const Pricing    = require('../models/Pricing');
 const Blog       = require('../models/Blog');
+const Settings   = require('../models/Settings');
 
 // ─── LOGIN ───────────────────────────────────────────
 router.post('/login', async (req, res) => {
@@ -228,6 +229,39 @@ router.put('/blog/:id', requireAuth, async (req, res) => {
 router.delete('/blog/:id', requireAuth, async (req, res) => {
   try {
     await Blog.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── SETTINGS ─────────────────────────────────────────
+router.get('/settings/:key', requireAuth, async (req, res) => {
+  try {
+    const setting = await Settings.findOne({ key: req.params.key });
+    res.json({ success: true, data: setting });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/settings', requireAuth, async (req, res) => {
+  try {
+    const { key, value } = req.body;
+    const setting = await Settings.findOneAndUpdate(
+      { key },
+      { key, value, updatedAt: Date.now() },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true, data: setting });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/settings/:key', requireAuth, async (req, res) => {
+  try {
+    await Settings.findOneAndDelete({ key: req.params.key });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

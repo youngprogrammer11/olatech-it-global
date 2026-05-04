@@ -51,6 +51,17 @@ app.use('/api/admin', require('./routes/admin'));
 
 // Public routes for testimonials and projects (for the frontend)
 // Public blog endpoints
+// Public settings endpoint
+app.get('/api/settings/:key', async (req, res) => {
+  try {
+    const Settings = require('./models/Settings');
+    const setting = await Settings.findOne({ key: req.params.key });
+    res.json({ success: true, data: setting });
+  } catch (err) {
+    res.status(500).json({ success: false, data: null });
+  }
+});
+
 app.get('/api/blog', async (req, res) => {
   try {
     const Blog = require('./models/Blog');

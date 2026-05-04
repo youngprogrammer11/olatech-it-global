@@ -311,15 +311,22 @@ loadProjects();
 loadPricing();
 loadAboutPhoto();
 
-/* ─── Load about photo from localStorage ─── */
-function loadAboutPhoto() {
-  const photo = localStorage.getItem('aboutPhotoData');
-  const imgEl = document.getElementById('aboutPhoto');
-  const placeholder = document.getElementById('aboutPlaceholder');
-  if (photo && imgEl && placeholder) {
-    imgEl.src = photo;
-    imgEl.style.display = 'block';
-    placeholder.style.display = 'none';
+/* ─── Load about photo from database ─── */
+async function loadAboutPhoto() {
+  try {
+    const res  = await fetch('/api/settings/aboutPhoto');
+    const data = await res.json();
+    if (data.success && data.data && data.data.value) {
+      const imgEl      = document.getElementById('aboutPhoto');
+      const placeholder = document.getElementById('aboutPlaceholder');
+      if (imgEl && placeholder) {
+        imgEl.src          = data.data.value;
+        imgEl.style.display = 'block';
+        placeholder.style.display = 'none';
+      }
+    }
+  } catch (err) {
+    console.log('No about photo set');
   }
 }
 
