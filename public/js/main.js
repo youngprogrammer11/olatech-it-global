@@ -200,9 +200,17 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 const style = document.createElement('style');
 style.textContent = `
   @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-  #portfolioGrid { grid-template-columns: repeat(3, 1fr) !important; }
-  #portfolioGrid .proj-card { grid-column: span 1 !important; }
-  #portfolioGrid .proj-card .proj-thumb { aspect-ratio: 16/10 !important; }
+  #portfolioGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  #portfolioGrid .proj-card { grid-column: span 1; cursor: pointer; }
+  #portfolioGrid .proj-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.16) !important; }
+  #portfolioGrid .proj-card .proj-thumb { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+  @media (max-width: 1100px) {
+    #portfolioGrid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    #portfolioGrid { grid-template-columns: 1fr !important; }
+    #portfolioGrid .proj-card { grid-column: span 1 !important; }
+  }
 `;
 document.head.appendChild(style);
 
@@ -287,8 +295,8 @@ async function loadProjects() {
              <span class="proj-icon-label">${p.name}</span>
            </div>`;
       return `
-        <div class="proj-card proj-card--sm" data-category="${p.category}">
-          <div class="proj-thumb">
+        <div class="proj-card" data-category="${p.category}" style="border-radius:20px;overflow:hidden;background:var(--surface-1);border:1px solid var(--border-1);transition:transform 0.4s,box-shadow 0.4s,border-color 0.3s">
+          <div class="proj-thumb" style="position:relative;aspect-ratio:16/10;overflow:hidden">
             ${thumb}
             <div class="proj-hover-overlay"><span class="proj-cta">View Case Study</span></div>
           </div>
