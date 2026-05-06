@@ -505,9 +505,9 @@ body::after {
   backdrop-filter: blur(20px); box-shadow: var(--shadow-md);
   z-index: 10;
 }
-.float-card--tl { top: -20px; left: -30px; animation: float-a 6s ease-in-out infinite; }
-.float-card--br { bottom: -20px; right: -30px; animation: float-b 7s ease-in-out infinite; }
-.float-card--tr { top: 25%; right: -40px; animation: float-a 8s ease-in-out infinite reverse; }
+.float-card--tl { top: -16px; left: -16px; animation: float-a 6s ease-in-out infinite; }
+.float-card--br { bottom: -16px; right: -16px; animation: float-b 7s ease-in-out infinite; }
+.float-card--tr { top: 20px; right: 20px; animation: float-a 8s ease-in-out infinite reverse; }
 @keyframes float-a { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 @keyframes float-b { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
 .float-num {
@@ -801,7 +801,7 @@ footer { background: var(--ink); border-top: 1px solid var(--border-1); padding:
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .about-layout { grid-template-columns: 1fr; gap: 48px; }
   .about-frame { max-width: 480px; margin: 0 auto; aspect-ratio: 3/4; }
-  .float-card--tr { display: none; }
+  .float-card--tr { top: 16px; right: 16px; }
   .process-track { grid-template-columns: repeat(3, 1fr); gap: 24px; }
   .process-track::before { display: none; }
   .contact-layout { grid-template-columns: 1fr; gap: 48px; }
@@ -831,12 +831,14 @@ footer { background: var(--ink); border-top: 1px solid var(--border-1); padding:
   .services-grid { grid-template-columns: 1fr; }
   .svc-card { padding: 28px 24px; }
   .about-layout { grid-template-columns: 1fr; gap: 40px; }
-  .about-frame { max-width: 100%; aspect-ratio: 3/4; }
+  .about-frame { max-width: 100%; aspect-ratio: 3/4; margin: 16px; }
   .about-text-col .section-heading { font-size: 2rem; }
   .mv-grid { grid-template-columns: 1fr; gap: 12px; }
-  .float-card--tl { top: -14px; left: -14px; padding: 10px 14px; }
-  .float-card--br { bottom: -14px; right: -14px; padding: 10px 14px; }
-  .float-card--tr { display: none; }
+  .float-card--tl { top: 12px; left: 12px; padding: 10px 14px; }
+  .float-card--br { bottom: 12px; right: 12px; padding: 10px 14px; }
+  .float-card--tr { display: block; top: auto; right: auto; bottom: 12px; left: 50%; transform: translateX(-50%); animation: none; padding: 10px 14px; }
+  .float-num { font-size: 1.3rem; }
+  .float-label { font-size: 0.68rem; }
   .float-num { font-size: 1.2rem; }
   .float-label { font-size: 0.68rem; }
   .process-track { grid-template-columns: repeat(2, 1fr); gap: 24px; }
