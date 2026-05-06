@@ -287,6 +287,7 @@ async function loadProjects() {
     };
 
     const cards = data.data.map((p, i) => {
+      const safeProject = JSON.stringify(p).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
       const thumb = p.imageData
         ? `<img src="${p.imageData}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />`
         : `<div class="proj-bg ${p.theme}"></div>
@@ -295,7 +296,9 @@ async function loadProjects() {
              <span class="proj-icon-label">${p.name}</span>
            </div>`;
       return `
-        <div class="proj-card" data-category="${p.category}" style="border-radius:20px;overflow:hidden;background:var(--surface-1);border:1px solid var(--border-1);transition:transform 0.4s,box-shadow 0.4s,border-color 0.3s">
+        <div class="proj-card" data-category="${p.category}"
+          style="border-radius:20px;overflow:hidden;background:var(--surface-1);border:1px solid var(--border-1);transition:transform 0.4s,box-shadow 0.4s,border-color 0.3s;cursor:pointer"
+          onclick='openCaseStudy(${JSON.stringify(p)})'>
           <div class="proj-thumb" style="position:relative;aspect-ratio:16/10;overflow:hidden">
             ${thumb}
             <div class="proj-hover-overlay"><span class="proj-cta">View Case Study</span></div>
@@ -350,7 +353,100 @@ async function loadHeroStats() {
   startCounters();
 }
 
-/* ─── Load about photo from database ─── */
+/* ─── Case Study Popup ─── */
+function openCaseStudy(project) {
+  const overlay = document.getElementById('caseStudyOverlay');
+  const p = typeof project === 'string' ? JSON.parse(project) : project;
+
+  // Cover
+  const bg  = document.getElementById('csBg');
+  const img = document.getElementById('csImg');
+  if (p.imageData) {
+    img.src = p.imageData;
+    img.style.display = 'block';
+    document.getElementById('csIconArea').style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    document.getElementById('csIconArea').style.display = 'flex';
+    bg.style.background = p.theme
+      ? getComputedStyle(document.documentElement).getPropertyValue('--' + p.theme) || themeColors[p.theme] || '#0a1f5c'
+      : '#0a1f5c';
+    bg.style.background = themeColors[p.theme] || 'linear-gradient(135deg,#05101f,#0a1f5c)';
+  }
+
+  // Title and description
+  document.getElementById('csCat').textContent   = p.categoryLabel || p.category || '';
+  document.getElementById('csTitle').textContent = p.name;
+  document.getElementById('csDesc').textContent  = p.description;
+
+  // Case study section
+  const hasCs = p.challenge || p.solution || p.results;
+  document.getElementById('csCsSection').style.display = hasCs ? 'block' : 'none';
+  if (p.challenge) {
+    document.getElementById('csChallenge').textContent    = p.challenge;
+    document.getElementById('csChallengeWrap').style.display = 'block';
+  } else {
+    document.getElementById('csChallengeWrap').style.display = 'none';
+  }
+  if (p.solution) {
+    document.getElementById('csSolution').textContent    = p.solution;
+    document.getElementById('csSolutionWrap').style.display = 'block';
+  } else {
+    document.getElementById('csSolutionWrap').style.display = 'none';
+  }
+  if (p.results) {
+    document.getElementById('csResults').textContent    = p.results;
+    document.getElementById('csResultsWrap').style.display = 'block';
+  } else {
+    document.getElementById('csResultsWrap').style.display = 'none';
+  }
+
+  // Tech stack
+  if (p.tech && p.tech.length) {
+    document.getElementById('csTechWrap').style.display = 'block';
+    document.getElementById('csTech').innerHTML = p.tech.map(t =>
+      `<span style="font-size:0.78rem;font-weight:600;color:#60a5fa;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);padding:4px 12px;border-radius:100px">${t}</span>`
+    ).join('');
+  } else {
+    document.getElementById('csTechWrap').style.display = 'none';
+  }
+
+  // Live URL
+  if (p.liveUrl) {
+    document.getElementById('csLiveUrlWrap').style.display = 'block';
+    document.getElementById('csLiveUrl').href = p.liveUrl;
+  } else {
+    document.getElementById('csLiveUrlWrap').style.display = 'none';
+  }
+
+  overlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+const themeColors = {
+  'theme-fintech': 'linear-gradient(145deg,#05101f,#0a1f5c)',
+  'theme-saas':    'linear-gradient(145deg,#050f1a,#0a3d5c)',
+  'theme-brand':   'linear-gradient(145deg,#120a20,#2d0e5c)',
+  'theme-ecom':    'linear-gradient(145deg,#1a0a0a,#5c1a1a)',
+  'theme-growth':  'linear-gradient(145deg,#0a150a,#0a3d1a)',
+  'theme-dash':    'linear-gradient(145deg,#151005,#4a3005)',
+};
+
+function closeCaseStudy(event) {
+  if (event.target === document.getElementById('caseStudyOverlay')) {
+    closeCaseStudyBtn();
+  }
+}
+
+function closeCaseStudyBtn() {
+  document.getElementById('caseStudyOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeCaseStudyBtn();
+});
 async function loadAboutPhoto() {
   try {
     const res  = await fetch('/api/settings/aboutPhoto');
