@@ -410,19 +410,42 @@
     <h3 id="projectModalTitle">Add Project</h3>
     <input type="hidden" id="pId" />
     <div class="form-group"><label>Project Name *</label><input id="pName" placeholder="e.g. FinEdge Banking Platform" /></div>
-    <div class="form-group">
-      <label>Category *</label>
-      <select id="pCategory">
-        <option value="web">Web Development</option>
-        <option value="software">Software Development</option>
-        <option value="brand">Branding</option>
-        <option value="marketing">Digital Marketing</option>
-      </select>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="pCategory">
+          <option value="web">Web Development</option>
+          <option value="software">Software Development</option>
+          <option value="brand">Branding</option>
+          <option value="marketing">Digital Marketing</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Category Label</label><input id="pCategoryLabel" placeholder="e.g. Web Development · Fintech" /></div>
     </div>
-    <div class="form-group"><label>Category Label</label><input id="pCategoryLabel" placeholder="e.g. Web Development · Fintech" /></div>
     <div class="form-group">
-      <label>Description *</label>
-      <textarea id="pDescription" placeholder="Brief description of the project and results achieved"></textarea>
+      <label>Short Description * (shown on project card)</label>
+      <textarea id="pDescription" placeholder="Brief description of the project and results achieved" style="min-height:70px"></textarea>
+    </div>
+
+    <div style="border-top:1px solid rgba(255,255,255,0.06);margin:20px 0;padding-top:20px">
+      <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#38bdf8;margin-bottom:16px">Case Study Details</div>
+      <div class="form-group">
+        <label>The Challenge</label>
+        <textarea id="pChallenge" placeholder="What problem did the client have before working with you?" style="min-height:80px"></textarea>
+      </div>
+      <div class="form-group">
+        <label>The Solution</label>
+        <textarea id="pSolution" placeholder="What did you build or do to solve it?" style="min-height:80px"></textarea>
+      </div>
+      <div class="form-group">
+        <label>The Results</label>
+        <textarea id="pResults" placeholder="What changed after? Numbers and specifics work best." style="min-height:80px"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Technologies Used (one per line)</label>
+        <textarea id="pTech" placeholder="React&#10;Node.js&#10;MongoDB&#10;AWS" style="min-height:80px"></textarea>
+      </div>
+      <div class="form-group"><label>Live URL (optional)</label><input id="pLiveUrl" placeholder="https://www.clientwebsite.com" /></div>
     </div>
     <div class="form-group">
       <label>Project Image (optional)</label>
@@ -745,11 +768,16 @@
   }
 
   // ── PROJECTS ──
+  let projectsCache = {};
+
   async function loadProjects() {
     try {
       const res  = await fetch('/api/admin/projects');
       const data = await res.json();
       const rows = data.data || [];
+      projectsCache = {};
+      rows.forEach(r => projectsCache[r._id] = r);
+
       const tbody = document.getElementById('projectsTable');
       if (!rows.length) {
         tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No projects yet. Add your first one.</p></div></td></tr>`;
@@ -762,14 +790,70 @@
           <td class="msg-text">${r.description}</td>
           <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
           <td><div class="actions">
-            <button class="action-btn btn-edit" onclick='editProject(${JSON.stringify(r)})'>Edit</button>
+            <button class="action-btn btn-edit" onclick="editProject('${r._id}')">Edit</button>
             <button class="action-btn btn-delete" onclick="deleteProject('${r._id}')">Delete</button>
           </div></td>
         </tr>`).join('');
     } catch (err) { console.error(err); }
   }
 
-  // ── IMAGE UPLOAD ──
+  function editProject(id) {
+    const p = projectsCache[id];
+    if (p) openProjectModal(p);
+  }
+
+  function openProjectModal(p = null) {
+    document.getElementById('projectModalTitle').textContent = p ? 'Edit Project' : 'Add Project';
+    document.getElementById('pId').value            = p ? p._id : '';
+    document.getElementById('pName').value          = p ? p.name : '';
+    document.getElementById('pCategory').value      = p ? p.category : 'web';
+    document.getElementById('pCategoryLabel').value = p ? p.categoryLabel : '';
+    document.getElementById('pDescription').value   = p ? p.description : '';
+    document.getElementById('pTheme').value         = p ? p.theme : 'theme-fintech';
+    document.getElementById('pChallenge').value     = p ? (p.challenge || '') : '';
+    document.getElementById('pSolution').value      = p ? (p.solution || '') : '';
+    document.getElementById('pResults').value       = p ? (p.results || '') : '';
+    document.getElementById('pTech').value          = p && p.tech ? p.tech.join('\n') : '';
+    document.getElementById('pLiveUrl').value       = p ? (p.liveUrl || '') : '';
+
+    clearImageUpload();
+    if (p && p.imageData) {
+      currentImageData = p.imageData;
+      document.getElementById('previewImg').src = p.imageData;
+      document.getElementById('imagePreview').style.display = 'block';
+      document.getElementById('uploadPrompt').style.display = 'none';
+      document.getElementById('imageUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
+    }
+
+    document.getElementById('projectModal').style.display = 'flex';
+  }
+
+
+  async function saveProject() {
+    const id      = document.getElementById('pId').value;
+    const techRaw = document.getElementById('pTech').value;
+    const tech    = techRaw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    const payload = {
+      name:          document.getElementById('pName').value.trim(),
+      category:      document.getElementById('pCategory').value,
+      categoryLabel: document.getElementById('pCategoryLabel').value.trim(),
+      description:   document.getElementById('pDescription').value.trim(),
+      theme:         document.getElementById('pTheme').value,
+      imageData:     currentImageData,
+      challenge:     document.getElementById('pChallenge').value.trim(),
+      solution:      document.getElementById('pSolution').value.trim(),
+      results:       document.getElementById('pResults').value.trim(),
+      tech,
+      liveUrl:       document.getElementById('pLiveUrl').value.trim()
+    };
+    if (!payload.name || !payload.description) return showToast('Name and description are required', 'error');
+    const url    = id ? `/api/admin/projects/${id}` : '/api/admin/projects';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeModal('projectModal');
+    showToast(id ? 'Project updated' : 'Project added');
+    loadProjects();
+  }
   let currentImageData = '';
 
   function handleImageUpload(event) {
@@ -803,49 +887,6 @@
     document.getElementById('uploadPrompt').style.display = 'block';
     document.getElementById('imageUploadArea').style.borderColor = 'rgba(255,255,255,0.1)';
     document.getElementById('imageError').style.display = 'none';
-  }
-
-  function openProjectModal(p = null) {
-    document.getElementById('projectModalTitle').textContent = p ? 'Edit Project' : 'Add Project';
-    document.getElementById('pId').value            = p ? p._id : '';
-    document.getElementById('pName').value          = p ? p.name : '';
-    document.getElementById('pCategory').value      = p ? p.category : 'web';
-    document.getElementById('pCategoryLabel').value = p ? p.categoryLabel : '';
-    document.getElementById('pDescription').value   = p ? p.description : '';
-    document.getElementById('pTheme').value         = p ? p.theme : 'theme-fintech';
-
-    // Handle existing image
-    clearImageUpload();
-    if (p && p.imageData) {
-      currentImageData = p.imageData;
-      document.getElementById('previewImg').src = p.imageData;
-      document.getElementById('imagePreview').style.display = 'block';
-      document.getElementById('uploadPrompt').style.display = 'none';
-      document.getElementById('imageUploadArea').style.borderColor = 'rgba(37,99,235,0.5)';
-    }
-
-    document.getElementById('projectModal').style.display = 'flex';
-  }
-
-  function editProject(p) { openProjectModal(p); }
-
-  async function saveProject() {
-    const id      = document.getElementById('pId').value;
-    const payload = {
-      name:          document.getElementById('pName').value.trim(),
-      category:      document.getElementById('pCategory').value,
-      categoryLabel: document.getElementById('pCategoryLabel').value.trim(),
-      description:   document.getElementById('pDescription').value.trim(),
-      theme:         document.getElementById('pTheme').value,
-      imageData:     currentImageData
-    };
-    if (!payload.name || !payload.description) return showToast('Name and description are required', 'error');
-    const url    = id ? `/api/admin/projects/${id}` : '/api/admin/projects';
-    const method = id ? 'PUT' : 'POST';
-    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-    closeModal('projectModal');
-    showToast(id ? 'Project updated' : 'Project added');
-    loadProjects();
   }
 
   async function deleteProject(id) {
