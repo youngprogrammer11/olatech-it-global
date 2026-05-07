@@ -9,7 +9,6 @@ const Pricing    = require('../models/Pricing');
 const Blog       = require('../models/Blog');
 const Settings   = require('../models/Settings');
 const Service    = require('../models/Service');
-const Service    = require('../models/Service');
 
 // ─── LOGIN ───────────────────────────────────────────
 router.post('/login', async (req, res) => {
