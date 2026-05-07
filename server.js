@@ -52,6 +52,28 @@ app.use('/api/admin', require('./routes/admin'));
 // Public routes for testimonials and projects (for the frontend)
 // Public blog endpoints
 // Public settings endpoint
+// Public services endpoint (custom added services)
+app.get('/api/services', async (req, res) => {
+  try {
+    const Service = require('./models/Service');
+    const data = await Service.find({ active: true }).sort({ order: 1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, data: [] });
+  }
+});
+
+// Public services endpoint
+app.get('/api/services', async (req, res) => {
+  try {
+    const Service = require('./models/Service');
+    const data = await Service.find({ active: true }).sort({ order: 1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, data: [] });
+  }
+});
+
 app.get('/api/settings/:key', async (req, res) => {
   try {
     const Settings = require('./models/Settings');

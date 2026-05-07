@@ -8,6 +8,8 @@ const Project    = require('../models/Project');
 const Pricing    = require('../models/Pricing');
 const Blog       = require('../models/Blog');
 const Settings   = require('../models/Settings');
+const Service    = require('../models/Service');
+const Service    = require('../models/Service');
 
 // ─── LOGIN ───────────────────────────────────────────
 router.post('/login', async (req, res) => {
@@ -229,6 +231,80 @@ router.put('/blog/:id', requireAuth, async (req, res) => {
 router.delete('/blog/:id', requireAuth, async (req, res) => {
   try {
     await Blog.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── SERVICES ─────────────────────────────────────────
+router.get('/services', requireAuth, async (req, res) => {
+  try {
+    const data = await Service.find().sort({ order: 1, createdAt: 1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/services', requireAuth, async (req, res) => {
+  try {
+    const item = await Service.create(req.body);
+    res.status(201).json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put('/services/:id', requireAuth, async (req, res) => {
+  try {
+    const item = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/services/:id', requireAuth, async (req, res) => {
+  try {
+    await Service.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── SERVICES ─────────────────────────────────────────
+router.get('/services', requireAuth, async (req, res) => {
+  try {
+    const data = await Service.find().sort({ order: 1, createdAt: 1 });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/services', requireAuth, async (req, res) => {
+  try {
+    const item = await Service.create(req.body);
+    res.status(201).json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put('/services/:id', requireAuth, async (req, res) => {
+  try {
+    const item = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/services/:id', requireAuth, async (req, res) => {
+  try {
+    await Service.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

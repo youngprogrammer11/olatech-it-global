@@ -159,9 +159,17 @@
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
         Messages
       </div>
+      <div class="nav-item" onclick="showPage('services')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l5.654-4.655m5.65-5.65l3.029-2.497a2.652 2.652 0 013.585 3.586l-2.497 3.029"/></svg>
+        Services
+      </div>
       <div class="nav-item" onclick="showPage('testimonials')">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
         Testimonials
+      </div>
+      <div class="nav-item" onclick="showPage('services')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+        Services
       </div>
       <div class="nav-item" onclick="showPage('projects')">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
@@ -201,6 +209,53 @@
           <table>
             <thead><tr><th>Name</th><th>Email</th><th>Service</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="messagesTable"><tr><td colspan="7" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SERVICES PAGE -->
+      <div class="page" id="page-services">
+        <div class="page-header">
+          <div>
+            <h2>Extra Services</h2>
+            <p>These appear after your 6 default services on the website</p>
+          </div>
+          <button class="add-btn" onclick="openServiceModal()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Service
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>Description</th><th>Tags</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="servicesTable"><tr><td colspan="5" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SERVICES PAGE -->
+      <div class="page" id="page-services">
+        <div class="page-header">
+          <div>
+            <h2>Custom Services</h2>
+            <p>Add extra services here. They appear alongside the default 6 on your website.</p>
+          </div>
+          <button class="add-btn" onclick="openServiceModal()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Service
+          </button>
+        </div>
+
+        <!-- Info banner -->
+        <div style="background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;gap:12px;align-items:flex-start">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px;color:#60a5fa;flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
+          <p style="font-size:0.83rem;color:#94a3b8;line-height:1.6">The 6 default services (Web Development, Software, IT Consulting, Digital Marketing, Branding, Cloud) always show on your site. Any services you add here will appear after them as additional cards.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Service Title</th><th>Description</th><th>Tags</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="servicesTable"><tr><td colspan="5" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -374,6 +429,31 @@
   </div>
 </div>
 
+<!-- SERVICE MODAL -->
+<div class="modal-overlay" id="serviceModal" style="display:none">
+  <div class="modal">
+    <h3 id="serviceModalTitle">Add Service</h3>
+    <input type="hidden" id="svId" />
+    <div class="form-group"><label>Service Title *</label><input id="svTitle" placeholder="e.g. Mobile App Development" /></div>
+    <div class="form-group">
+      <label>Description *</label>
+      <textarea id="svDescription" placeholder="What does this service include? What problem does it solve?" style="min-height:100px"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Tags (one per line)</label>
+      <textarea id="svTags" placeholder="iOS & Android&#10;React Native&#10;Flutter&#10;App Store Deployment" style="min-height:90px"></textarea>
+    </div>
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:12px">
+      <input type="checkbox" id="svActive" checked style="width:auto;accent-color:#2563eb" />
+      <label for="svActive" style="margin:0;cursor:pointer">Show on website</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('serviceModal')">Cancel</button>
+      <button class="btn-save" onclick="saveService()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- TESTIMONIAL MODAL -->
 <div class="modal-overlay" id="testimonialModal" style="display:none">
   <div class="modal">
@@ -478,6 +558,34 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('projectModal')">Cancel</button>
       <button class="btn-save" onclick="saveProject()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICE MODAL -->
+<div class="modal-overlay" id="serviceModal" style="display:none">
+  <div class="modal">
+    <h3 id="serviceModalTitle">Add Service</h3>
+    <input type="hidden" id="svId" />
+    <div class="form-group">
+      <label>Service Title *</label>
+      <input id="svTitle" placeholder="e.g. Mobile App Development" />
+    </div>
+    <div class="form-group">
+      <label>Description *</label>
+      <textarea id="svDescription" placeholder="Describe what this service includes and who it is for" style="min-height:100px"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Tags (one per line)</label>
+      <textarea id="svTags" placeholder="React Native&#10;Flutter&#10;iOS&#10;Android" style="min-height:80px"></textarea>
+    </div>
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:12px">
+      <input type="checkbox" id="svActive" checked style="width:auto;accent-color:#2563eb" />
+      <label for="svActive" style="margin:0;cursor:pointer">Active (show on website)</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('serviceModal')">Cancel</button>
+      <button class="btn-save" onclick="saveService()">Save Service</button>
     </div>
   </div>
 </div>
@@ -600,6 +708,7 @@
     document.getElementById('page-' + name).classList.add('active');
     event.currentTarget.classList.add('active');
     if (name === 'messages')     loadMessages();
+    if (name === 'services')     loadServices();
     if (name === 'testimonials') loadTestimonials();
     if (name === 'projects')     loadProjects();
     if (name === 'pricing')      loadPricing();
@@ -687,6 +796,77 @@
     await fetch(`/api/admin/contacts/${id}`, { method:'DELETE' });
     showToast('Message deleted');
     loadMessages();
+  }
+
+  // ── SERVICES ──
+  let servicesCache = {};
+
+  async function loadServices() {
+    try {
+      const res  = await fetch('/api/admin/services');
+      const data = await res.json();
+      const rows = data.data || [];
+      servicesCache = {};
+      rows.forEach(r => servicesCache[r._id] = r);
+
+      const tbody = document.getElementById('servicesTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No custom services yet. The 6 default services still show on your site.</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.title}</strong></td>
+          <td class="msg-text">${r.description}</td>
+          <td style="color:#94a3b8;font-size:0.8rem">${r.tags ? r.tags.join(', ') : ''}</td>
+          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
+          <td><div class="actions">
+            <button class="action-btn btn-edit" onclick="editService('${r._id}')">Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteService('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function openServiceModal(s = null) {
+    document.getElementById('serviceModalTitle').textContent = s ? 'Edit Service' : 'Add Service';
+    document.getElementById('svId').value          = s ? s._id : '';
+    document.getElementById('svTitle').value       = s ? s.title : '';
+    document.getElementById('svDescription').value = s ? s.description : '';
+    document.getElementById('svTags').value        = s && s.tags ? s.tags.join('\n') : '';
+    document.getElementById('svActive').checked    = s ? s.active : true;
+    document.getElementById('serviceModal').style.display = 'flex';
+  }
+
+  function editService(id) {
+    const s = servicesCache[id];
+    if (s) openServiceModal(s);
+  }
+
+  async function saveService() {
+    const id      = document.getElementById('svId').value;
+    const tagsRaw = document.getElementById('svTags').value;
+    const tags    = tagsRaw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    const payload = {
+      title:       document.getElementById('svTitle').value.trim(),
+      description: document.getElementById('svDescription').value.trim(),
+      tags,
+      active:      document.getElementById('svActive').checked
+    };
+    if (!payload.title || !payload.description) return showToast('Title and description are required', 'error');
+    const url    = id ? `/api/admin/services/${id}` : '/api/admin/services';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeModal('serviceModal');
+    showToast(id ? 'Service updated' : 'Service added');
+    loadServices();
+  }
+
+  async function deleteService(id) {
+    if (!confirm('Delete this service?')) return;
+    await fetch(`/api/admin/services/${id}`, { method:'DELETE' });
+    showToast('Service deleted');
+    loadServices();
   }
 
   // ── TESTIMONIALS ──
@@ -963,6 +1143,77 @@
     await fetch(`/api/admin/pricing/${id}`, { method:'DELETE' });
     showToast('Pricing deleted');
     loadPricing();
+  }
+
+  // ── SERVICES ──
+  let servicesCache = {};
+
+  async function loadServices() {
+    try {
+      const res  = await fetch('/api/admin/services');
+      const data = await res.json();
+      const rows = data.data || [];
+      servicesCache = {};
+      rows.forEach(r => servicesCache[r._id] = r);
+
+      const tbody = document.getElementById('servicesTable');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No extra services yet. Add one above.</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${r.title}</strong></td>
+          <td class="msg-text">${r.description}</td>
+          <td style="color:#94a3b8;font-size:0.78rem">${r.tags ? r.tags.join(', ') : 'None'}</td>
+          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
+          <td><div class="actions">
+            <button class="action-btn btn-edit" onclick="editService('${r._id}')">Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteService('${r._id}')">Delete</button>
+          </div></td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function openServiceModal(s = null) {
+    document.getElementById('serviceModalTitle').textContent = s ? 'Edit Service' : 'Add Service';
+    document.getElementById('svId').value          = s ? s._id : '';
+    document.getElementById('svTitle').value       = s ? s.title : '';
+    document.getElementById('svDescription').value = s ? s.description : '';
+    document.getElementById('svTags').value        = s && s.tags ? s.tags.join('\n') : '';
+    document.getElementById('svActive').checked    = s ? s.active : true;
+    document.getElementById('serviceModal').style.display = 'flex';
+  }
+
+  function editService(id) {
+    const s = servicesCache[id];
+    if (s) openServiceModal(s);
+  }
+
+  async function saveService() {
+    const id      = document.getElementById('svId').value;
+    const tagsRaw = document.getElementById('svTags').value;
+    const tags    = tagsRaw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    const payload = {
+      title:       document.getElementById('svTitle').value.trim(),
+      description: document.getElementById('svDescription').value.trim(),
+      tags,
+      active: document.getElementById('svActive').checked
+    };
+    if (!payload.title || !payload.description) return showToast('Title and description are required', 'error');
+    const url    = id ? `/api/admin/services/${id}` : '/api/admin/services';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    closeModal('serviceModal');
+    showToast(id ? 'Service updated' : 'Service added');
+    loadServices();
+  }
+
+  async function deleteService(id) {
+    if (!confirm('Delete this service?')) return;
+    await fetch(`/api/admin/services/${id}`, { method: 'DELETE' });
+    showToast('Service deleted');
+    loadServices();
   }
 
   // ── BLOG ──
