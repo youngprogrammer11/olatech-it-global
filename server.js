@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const path = require('path');
 
 const app = express();
@@ -22,15 +23,21 @@ app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
-// Session for admin login
+// Session - stored in MongoDB so it survives server restarts
 app.use(session({
   secret: process.env.SESSION_SECRET || 'olatech-admin-secret-2024',
   resave: false,
   saveUninitialized: false,
+  store: process.env.MONGODB_URI
+    ? MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        touchAfter: 24 * 3600
+      })
+    : undefined,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   }
 }));
 
