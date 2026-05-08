@@ -25,7 +25,14 @@ router.post('/login', async (req, res) => {
   }
 
   req.session.isAdmin = true;
-  res.json({ success: true, message: 'Logged in' });
+  req.session.save((err) => {
+    if (err) {
+      console.error('Session save error:', err);
+      return res.status(500).json({ success: false, message: 'Session error' });
+    }
+    console.log('Admin logged in, session ID:', req.session.id);
+    res.json({ success: true, message: 'Logged in' });
+  });
 });
 
 router.post('/logout', (req, res) => {
