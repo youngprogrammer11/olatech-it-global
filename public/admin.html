@@ -799,8 +799,6 @@
   }
 
   // ── SERVICES ──
-  let servicesCache = {};
-
   async function loadServices() {
     try {
       const res  = await fetch('/api/admin/services');
@@ -1143,77 +1141,6 @@
     await fetch(`/api/admin/pricing/${id}`, { method:'DELETE' });
     showToast('Pricing deleted');
     loadPricing();
-  }
-
-  // ── SERVICES ──
-  let servicesCache = {};
-
-  async function loadServices() {
-    try {
-      const res  = await fetch('/api/admin/services');
-      const data = await res.json();
-      const rows = data.data || [];
-      servicesCache = {};
-      rows.forEach(r => servicesCache[r._id] = r);
-
-      const tbody = document.getElementById('servicesTable');
-      if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No extra services yet. Add one above.</p></div></td></tr>`;
-        return;
-      }
-      tbody.innerHTML = rows.map(r => `
-        <tr>
-          <td><strong>${r.title}</strong></td>
-          <td class="msg-text">${r.description}</td>
-          <td style="color:#94a3b8;font-size:0.78rem">${r.tags ? r.tags.join(', ') : 'None'}</td>
-          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
-          <td><div class="actions">
-            <button class="action-btn btn-edit" onclick="editService('${r._id}')">Edit</button>
-            <button class="action-btn btn-delete" onclick="deleteService('${r._id}')">Delete</button>
-          </div></td>
-        </tr>`).join('');
-    } catch (err) { console.error(err); }
-  }
-
-  function openServiceModal(s = null) {
-    document.getElementById('serviceModalTitle').textContent = s ? 'Edit Service' : 'Add Service';
-    document.getElementById('svId').value          = s ? s._id : '';
-    document.getElementById('svTitle').value       = s ? s.title : '';
-    document.getElementById('svDescription').value = s ? s.description : '';
-    document.getElementById('svTags').value        = s && s.tags ? s.tags.join('\n') : '';
-    document.getElementById('svActive').checked    = s ? s.active : true;
-    document.getElementById('serviceModal').style.display = 'flex';
-  }
-
-  function editService(id) {
-    const s = servicesCache[id];
-    if (s) openServiceModal(s);
-  }
-
-  async function saveService() {
-    const id      = document.getElementById('svId').value;
-    const tagsRaw = document.getElementById('svTags').value;
-    const tags    = tagsRaw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
-    const payload = {
-      title:       document.getElementById('svTitle').value.trim(),
-      description: document.getElementById('svDescription').value.trim(),
-      tags,
-      active: document.getElementById('svActive').checked
-    };
-    if (!payload.title || !payload.description) return showToast('Title and description are required', 'error');
-    const url    = id ? `/api/admin/services/${id}` : '/api/admin/services';
-    const method = id ? 'PUT' : 'POST';
-    await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    closeModal('serviceModal');
-    showToast(id ? 'Service updated' : 'Service added');
-    loadServices();
-  }
-
-  async function deleteService(id) {
-    if (!confirm('Delete this service?')) return;
-    await fetch(`/api/admin/services/${id}`, { method: 'DELETE' });
-    showToast('Service deleted');
-    loadServices();
   }
 
   // ── BLOG ──
