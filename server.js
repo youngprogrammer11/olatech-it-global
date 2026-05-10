@@ -1,173 +1,138 @@
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const session = require('express-session');
+const express    = require('express');
+const mongoose   = require('mongoose');
+const cors       = require('cors');
+const helmet     = require('helmet');
+const rateLimit  = require('express-rate-limit');
+const session    = require('express-session');
 const MongoStore = require('connect-mongo');
-const path = require('path');
+const path       = require('path');
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
-
-// Trust Render proxy
+// ── Security ──
+app.use(helmet({ contentSecurityPolicy: false }));
 app.set('trust proxy', 1);
-
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
-// Session - stored in MongoDB so it survives server restarts
+// ── Session ──
 app.use(session({
   secret: process.env.SESSION_SECRET || 'olatech-admin-secret-2024',
   resave: false,
   saveUninitialized: false,
   store: process.env.MONGODB_URI
-    ? MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
-        touchAfter: 24 * 3600
-      })
+    ? MongoStore.create({ mongoUrl: process.env.MONGODB_URI, touchAfter: 24 * 3600 })
     : undefined,
-  cookie: {
-    secure: false,
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-  }
+  cookie: { secure: false, httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 }
 }));
 
-// Rate limiting for contact form
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
+// ── Rate limiting ──
+app.use('/api/contact', rateLimit({
+  windowMs: 15 * 60 * 1000, max: 10,
   message: { success: false, message: 'Too many requests. Please try again later.' }
-});
-app.use('/api/contact', apiLimiter);
+}));
 
-// Static files
+// ── Static files ──
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Routes
+// ── API Routes ──
 app.use('/api/contact', require('./routes/contact'));
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/admin',   require('./routes/admin'));
 
-// Public routes for testimonials and projects (for the frontend)
-// Public blog endpoints
-// Public settings endpoint
-// Public services endpoint (custom added services)
+// ── Public API endpoints ──
 app.get('/api/services', async (req, res) => {
   try {
-    const Service = require('./models/Service');
-    const data = await Service.find({ active: true }).sort({ order: 1 });
+    const data = await require('./models/Service').find({ active: true }).sort({ order: 1 });
     res.json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, data: [] });
-  }
-});
-
-// Public services endpoint
-app.get('/api/services', async (req, res) => {
-  try {
-    const Service = require('./models/Service');
-    const data = await Service.find({ active: true }).sort({ order: 1 });
-    res.json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, data: [] });
-  }
+  } catch { res.status(500).json({ success: false, data: [] }); }
 });
 
 app.get('/api/settings/:key', async (req, res) => {
   try {
-    const Settings = require('./models/Settings');
-    const setting = await Settings.findOne({ key: req.params.key });
+    const setting = await require('./models/Settings').findOne({ key: req.params.key });
     res.json({ success: true, data: setting });
-  } catch (err) {
-    res.status(500).json({ success: false, data: null });
-  }
+  } catch { res.status(500).json({ success: false, data: null }); }
 });
 
 app.get('/api/blog', async (req, res) => {
   try {
-    const Blog = require('./models/Blog');
-    const data = await Blog.find({ published: true }).sort({ createdAt: -1 });
+    const data = await require('./models/Blog').find({ published: true }).sort({ createdAt: -1 });
     res.json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, data: [] });
-  }
+  } catch { res.status(500).json({ success: false, data: [] }); }
 });
 
 app.get('/api/blog/:slug', async (req, res) => {
   try {
-    const Blog = require('./models/Blog');
-    const post = await Blog.findOne({ slug: req.params.slug, published: true });
+    const post = await require('./models/Blog').findOne({ slug: req.params.slug, published: true });
     if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
     res.json({ success: true, data: post });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Serve blog pages
-app.get('/blog', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'blog.html'));
-});
-
-app.get('/blog/:slug', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'blog-post.html'));
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
 app.get('/api/pricing', async (req, res) => {
   try {
-    const Pricing = require('./models/Pricing');
-    const data = await Pricing.find({ active: true }).sort({ order: 1 });
+    const data = await require('./models/Pricing').find({ active: true }).sort({ order: 1 });
     res.json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, data: [] });
-  }
+  } catch { res.status(500).json({ success: false, data: [] }); }
 });
 
 app.get('/api/testimonials', async (req, res) => {
   try {
-    const Testimonial = require('./models/Testimonial');
-    const data = await Testimonial.find({ active: true }).sort({ order: 1 });
+    const data = await require('./models/Testimonial').find({ active: true }).sort({ order: 1 });
     res.json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, data: [] });
-  }
+  } catch { res.status(500).json({ success: false, data: [] }); }
 });
 
 app.get('/api/projects', async (req, res) => {
   try {
-    const Project = require('./models/Project');
-    const data = await Project.find({ active: true }).sort({ order: 1 });
+    const data = await require('./models/Project').find({ active: true }).sort({ order: 1 });
     res.json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, data: [] });
-  }
+  } catch { res.status(500).json({ success: false, data: [] }); }
 });
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', company: 'Olatech IT Global', timestamp: new Date().toISOString() });
 });
 
-// Admin panel
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+// ── Sitemap ──
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const posts   = await require('./models/Blog').find({ published: true }).select('slug updatedAt');
+    const baseUrl = 'https://olatech-it-global.onrender.com';
+    const pages   = [
+      { url: '/',     priority: '1.0', changefreq: 'weekly'  },
+      { url: '/blog', priority: '0.8', changefreq: 'weekly'  },
+      ...posts.map(p => ({
+        url:        `/blog/${p.slug}`,
+        priority:   '0.7',
+        changefreq: 'monthly',
+        lastmod:    new Date(p.updatedAt).toISOString().split('T')[0]
+      }))
+    ];
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map(p => `  <url>
+    <loc>${baseUrl}${p.url}</loc>
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+    ${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ''}
+  </url>`).join('\n')}
+</urlset>`;
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch { res.status(500).send('Error generating sitemap'); }
 });
 
-// Serve main HTML for all other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// ── Page routes ──
+app.get('/blog',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog.html')));
+app.get('/blog/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog-post.html')));
+app.get('/admin',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('*',           (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-// MongoDB Connection
+// ── MongoDB ──
 const connectDB = async () => {
   try {
     if (process.env.MONGODB_URI) {
