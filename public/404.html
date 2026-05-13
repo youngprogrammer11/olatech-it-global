@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found | Olatech IT Global</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KZBN2KDMN6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-KZBN2KDMN6");
+  </script>
+  <style>
+    .notfound-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 40px 24px;
+    }
+
+    /* Background effects */
+    .notfound-page::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .notfound-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    .notfound-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 560px;
+    }
+
+    .notfound-code {
+      font-family: var(--font-sans);
+      font-size: clamp(6rem, 18vw, 10rem);
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      animation: fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .notfound-title {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      animation: fade-up 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+    }
+
+    .notfound-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 44px;
+      animation: fade-up 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+    }
+
+    .notfound-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fade-up 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+    }
+
+    .notfound-links {
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border-1);
+      animation: fade-up 0.8s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+    }
+
+    .notfound-links p {
+      font-size: 0.82rem;
+      color: var(--text-tertiary);
+      margin-bottom: 16px;
+    }
+
+    .notfound-links-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .notfound-link {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--surface-1);
+      border: 1px solid var(--border-1);
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .notfound-link:hover {
+      border-color: var(--border-3);
+      color: var(--text-primary);
+      background: var(--surface-2);
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .notfound-actions { flex-direction: column; align-items: center; }
+      .notfound-actions .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar" class="scrolled">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="logo-gem">O</div>
+        <span class="logo-name">Olatech <em>IT Global</em></span>
+      </a>
+      <div class="nav-right">
+        <a href="/" class="btn btn--ghost">Back to Home</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="notfound-page">
+  <div class="notfound-grid"></div>
+
+  <div class="notfound-content">
+    <div class="notfound-code">404</div>
+    <h1 class="notfound-title">This page does not exist</h1>
+    <p class="notfound-desc">
+      The page you are looking for may have been moved, deleted, or never existed.
+      Let us take you somewhere useful.
+    </p>
+
+    <div class="notfound-actions">
+      <a href="/" class="btn btn--primary btn--lg">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+        Go to Homepage
+      </a>
+      <a href="/#contact" class="btn btn--ghost btn--lg">
+        Contact Us
+      </a>
+    </div>
+
+    <div class="notfound-links">
+      <p>Or go directly to one of these pages</p>
+      <div class="notfound-links-row">
+        <a href="/#services"  class="notfound-link">Services</a>
+        <a href="/#portfolio" class="notfound-link">Portfolio</a>
+        <a href="/#pricing"   class="notfound-link">Pricing</a>
+        <a href="/blog"       class="notfound-link">Blog</a>
+        <a href="/#about"     class="notfound-link">About</a>
+        <a href="/#contact"   class="notfound-link">Contact</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto redirect after 30 seconds
+  let countdown = 30;
+  const timer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      clearInterval(timer);
+      window.location.href = '/';
+    }
+  }, 1000);
+</script>
+
+</body>
+</html>

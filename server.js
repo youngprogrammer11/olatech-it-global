@@ -130,7 +130,8 @@ ${pages.map(p => `  <url>
 app.get('/blog',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog.html')));
 app.get('/blog/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog-post.html')));
 app.get('/admin',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
-app.get('*',           (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/',           (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.use(           (req, res) => res.status(404).sendFile(path.join(__dirname, 'public', '404.html')));
 
 // ── MongoDB ──
 const connectDB = async () => {
