@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://olatech-it-global.onrender.com/sitemap.xml
+Sitemap: https://olatechitglobal.com/sitemap.xml

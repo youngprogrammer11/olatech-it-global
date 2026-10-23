@@ -190,7 +190,7 @@
 
 <!-- POST HERO -->
 <div class="post-hero" id="postHero" style="background:var(--ink-2)">
-  <div class="post-hero-bg"></div>
+  <div class="post-hero-bg" id="postHeroBg"></div>
   <div class="post-hero-grid"></div>
   <div class="container">
     <div class="post-hero-content" id="postHeroContent">
@@ -252,7 +252,7 @@
       <div class="footer-col">
         <h5>Contact</h5>
         <ul>
-          <li><a href="mailto:info@olatechitglobal.com">info@olatechitglobal.com</a></li>
+          <li><a href="mailto:olakanmiquadri@gmail.com">olakanmiquadri@gmail.com</a></li>
           <li><a href="tel:+2348138916673">+234 813 891 6673</a></li>
           <li><a href="https://wa.me/2348138916673" target="_blank">WhatsApp</a></li>
         </ul>
@@ -310,8 +310,17 @@
       document.getElementById('pageTitle').textContent = `${post.title} — Olatech IT Global`;
       document.getElementById('pageDesc').setAttribute('content', post.excerpt);
 
-      // Update hero background
-      document.getElementById('postHero').style.background = post.coverColor || 'var(--ink-2)';
+      // Update hero background - use featured image if available
+      if (post.featuredImage) {
+        document.getElementById('postHero').style.background = 'var(--ink-2)';
+        document.getElementById('postHero').style.backgroundImage = `url(${post.featuredImage})`;
+        document.getElementById('postHero').style.backgroundSize = 'cover';
+        document.getElementById('postHero').style.backgroundPosition = 'center';
+        // Add dark overlay for readability
+        document.getElementById('postHeroBg').style.background = 'rgba(8,12,20,0.75)';
+      } else {
+        document.getElementById('postHero').style.background = post.coverColor || 'var(--ink-2)';
+      }
 
       // Render hero
       document.getElementById('postHeroContent').innerHTML = `
@@ -334,25 +343,8 @@
         </div>
       `;
 
-      // Render content - convert simple markdown-like syntax
-      let html = post.content
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-        .replace(/^---$/gm, '<hr>')
-        .split('\n\n')
-        .map(p => p.trim())
-        .filter(p => p)
-        .map(p => {
-          if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<blockquote') || p.startsWith('<hr')) return p;
-          return `<p>${p}</p>`;
-        })
-        .join('\n');
-
-      document.getElementById('postContent').innerHTML = html;
+      // Render content directly as HTML from Quill
+      document.getElementById('postContent').innerHTML = post.content;
       document.getElementById('postCta').style.display = 'block';
 
     } catch (err) {
