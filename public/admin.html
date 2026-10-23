@@ -265,17 +265,30 @@
         <div class="page-header">
           <div>
             <h2>Client Testimonials</h2>
-            <p>These show up in the "What our clients say" section</p>
+            <p>Approve client submissions or add your own</p>
           </div>
-          <button class="add-btn" onclick="openTestimonialModal()">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            Add Testimonial
-          </button>
+          <div style="display:flex;gap:10px">
+            <a href="/submit-testimonial" target="_blank" class="add-btn" style="background:rgba(37,99,235,0.15);color:#60a5fa;text-decoration:none">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+              Client Link
+            </a>
+            <button class="add-btn" onclick="openTestimonialModal()">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Add Manually
+            </button>
+          </div>
         </div>
+
+        <!-- Pending banner -->
+        <div id="pendingBanner" style="display:none;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px;color:#fbbf24;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+          <p id="pendingText" style="font-size:0.83rem;color:#fbbf24;margin:0"></p>
+        </div>
+
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Name</th><th>Role</th><th>Quote</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="testimonialsTable"><tr><td colspan="5" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+            <thead><tr><th>Photo</th><th>Name</th><th>Role</th><th>Review</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="testimonialsTable"><tr><td colspan="6" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -868,31 +881,78 @@
   }
 
   // ── TESTIMONIALS ──
+  let testimonialsCache = {};
+
   async function loadTestimonials() {
     try {
       const res  = await fetch('/api/admin/testimonials');
       const data = await res.json();
       const rows = data.data || [];
+      testimonialsCache = {};
+      rows.forEach(r => testimonialsCache[r._id] = r);
+
+      const pending = rows.filter(r => r.status === 'pending');
+      const banner  = document.getElementById('pendingBanner');
+      const pText   = document.getElementById('pendingText');
+      if (pending.length > 0) {
+        banner.style.display = 'flex';
+        pText.textContent = `${pending.length} review${pending.length > 1 ? 's' : ''} waiting for your approval`;
+      } else {
+        banner.style.display = 'none';
+      }
+
       const tbody = document.getElementById('testimonialsTable');
       if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><p>No testimonials yet. Add your first one.</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><p>No testimonials yet. Share the client link or add one manually.</p></div></td></tr>`;
         return;
       }
-      tbody.innerHTML = rows.map(r => `
-        <tr>
-          <td><div style="display:flex;align-items:center;gap:10px">
-            <div style="width:34px;height:34px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0">${r.initials}</div>
-            <strong>${r.name}</strong>
-          </div></td>
-          <td style="color:#94a3b8">${r.role}${r.company ? ', ' + r.company : ''}</td>
-          <td class="msg-text">${r.quote}</td>
-          <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
-          <td><div class="actions">
-            <button class="action-btn btn-edit" onclick="editTestimonial(${JSON.stringify(r).split('"').join("'")})">Edit</button>
-            <button class="action-btn btn-delete" onclick="deleteTestimonial('${r._id}')">Delete</button>
-          </div></td>
-        </tr>`).join('');
+
+      tbody.innerHTML = rows.map(r => {
+        const avatar = r.photo
+          ? `<img src="${r.photo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
+          : `<div style="width:36px;height:36px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0;color:#fff">${r.initials}</div>`;
+
+        const statusBadge = r.status === 'pending'
+          ? `<span class="badge" style="background:rgba(234,179,8,0.15);color:#fbbf24">Pending</span>`
+          : r.status === 'approved'
+          ? `<span class="badge badge-replied">Approved</span>`
+          : `<span class="badge badge-read">Rejected</span>`;
+
+        const actionBtns = r.status === 'pending'
+          ? `<button class="action-btn" style="background:rgba(34,197,94,0.12);color:#4ade80" onclick="approveTestimonial('${r._id}')">Approve</button>
+             <button class="action-btn btn-delete" onclick="rejectTestimonial('${r._id}')">Reject</button>`
+          : `<button class="action-btn btn-edit" onclick="editTestimonialById('${r._id}')">Edit</button>
+             <button class="action-btn btn-delete" onclick="deleteTestimonial('${r._id}')">Delete</button>`;
+
+        return `
+          <tr style="${r.status === 'pending' ? 'background:rgba(234,179,8,0.03)' : ''}">
+            <td>${avatar}</td>
+            <td><strong>${r.name}</strong></td>
+            <td style="color:#94a3b8;font-size:0.82rem">${r.role}${r.company ? ', ' + r.company : ''}</td>
+            <td class="msg-text">${r.quote}</td>
+            <td>${statusBadge}</td>
+            <td><div class="actions">${actionBtns}</div></td>
+          </tr>`;
+      }).join('');
     } catch (err) { console.error(err); }
+  }
+
+  async function approveTestimonial(id) {
+    await fetch(`/api/admin/testimonials/${id}/approve`, { method: 'PATCH' });
+    showToast('Testimonial approved and published');
+    loadTestimonials();
+  }
+
+  async function rejectTestimonial(id) {
+    if (!confirm('Reject this testimonial? It will not appear on the site.')) return;
+    await fetch(`/api/admin/testimonials/${id}/reject`, { method: 'PATCH' });
+    showToast('Testimonial rejected');
+    loadTestimonials();
+  }
+
+  function editTestimonialById(id) {
+    const t = testimonialsCache[id];
+    if (t) openTestimonialModal(t);
   }
 
   function openTestimonialModal(t = null) {

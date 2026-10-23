@@ -239,19 +239,23 @@ async function loadTestimonials() {
     const track = document.getElementById('testimonialTrack');
     if (!track) return;
 
-    const cards = data.data.map(t => `
-      <div class="t-card">
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <p class="t-quote">"${t.quote}"</p>
-        <div class="t-author">
-          <div class="t-avatar" style="background:${t.color}">${t.initials}</div>
-          <div>
-            <div class="t-name">${t.name}</div>
-            <div class="t-role">${t.role}${t.company ? ', ' + t.company : ''}</div>
+    const cards = data.data.map(t => {
+      const avatar = t.photo
+        ? `<img src="${t.photo}" alt="${t.name}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
+        : `<div class="t-avatar" style="background:${t.color}">${t.initials}</div>`;
+      return `
+        <div class="t-card">
+          <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <p class="t-quote">"${t.quote}"</p>
+          <div class="t-author">
+            ${avatar}
+            <div>
+              <div class="t-name">${t.name}</div>
+              <div class="t-role">${t.role}${t.company ? ', ' + t.company : ''}</div>
+            </div>
           </div>
-        </div>
-      </div>
-    `).join('');
+        </div>`;
+    }).join('');
 
     // Need at least 3 cards for seamless infinite scroll, otherwise just show them static
     if (data.data.length >= 3) {

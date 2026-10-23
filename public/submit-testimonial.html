@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Share Your Experience | Olatech IT Global</title>
+  <meta name="description" content="Share your experience working with Olatech IT Global." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <style>
+    .submit-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .submit-page::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .submit-box {
+      background: var(--surface-1);
+      border: 1px solid var(--border-1);
+      border-radius: 24px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .submit-header { text-align: center; margin-bottom: 36px; }
+    .submit-logo {
+      width: 56px; height: 56px;
+      background: #2563eb;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; color: #fff;
+      margin: 0 auto 20px;
+    }
+    .submit-header h1 {
+      font-size: 1.6rem; font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .submit-header p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 7px;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: var(--ink);
+      border: 1px solid var(--border-1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    .form-group textarea { resize: vertical; min-height: 130px; line-height: 1.7; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Photo upload */
+    .photo-upload-area {
+      border: 2px dashed var(--border-1);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .photo-upload-area:hover {
+      border-color: #2563eb;
+      background: rgba(37,99,235,0.04);
+    }
+    .photo-preview {
+      display: none;
+      margin-bottom: 12px;
+    }
+    .photo-preview img {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto;
+      display: block;
+      border: 3px solid #2563eb;
+    }
+    .photo-prompt svg {
+      width: 32px; height: 32px;
+      color: #475569;
+      margin: 0 auto 10px;
+    }
+    .photo-prompt p { font-size: 0.82rem; color: #64748b; }
+    .photo-prompt span { font-size: 0.72rem; color: #475569; display: block; margin-top: 4px; }
+
+    /* Star rating */
+    .stars {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .star {
+      font-size: 2rem;
+      cursor: pointer;
+      color: #334155;
+      transition: color 0.15s, transform 0.15s;
+      user-select: none;
+    }
+    .star:hover, .star.active { color: #f59e0b; transform: scale(1.15); }
+
+    .submit-btn {
+      width: 100%;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.2s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .submit-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; transform: none; }
+
+    .form-status {
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      margin-top: 16px;
+      display: none;
+      text-align: center;
+    }
+    .form-status.success {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: #4ade80;
+      display: block;
+    }
+    .form-status.error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171;
+      display: block;
+    }
+
+    /* Success state */
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .success-icon {
+      width: 72px; height: 72px;
+      background: rgba(34,197,94,0.1);
+      border: 2px solid rgba(34,197,94,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+    }
+    .success-state h2 {
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .success-state p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+
+    @media (max-width: 560px) {
+      .submit-box { padding: 32px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar" class="scrolled">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="logo-gem">O</div>
+        <span class="logo-name">Olatech <em>IT Global</em></span>
+      </a>
+      <div class="nav-right">
+        <a href="/" class="btn btn--ghost">Back to Site</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="submit-page">
+  <div class="submit-box">
+
+    <!-- Header -->
+    <div class="submit-header">
+      <div class="submit-logo">O</div>
+      <h1>Share your experience</h1>
+      <p>We would love to hear what it was like working with Olatech IT Global. Your review helps other businesses make the right decision.</p>
+    </div>
+
+    <!-- Form -->
+    <div id="submitForm">
+
+      <!-- Star rating -->
+      <div class="form-group" style="text-align:center">
+        <label style="display:block;margin-bottom:12px">How would you rate your experience?</label>
+        <div class="stars">
+          <span class="star active" data-value="1">★</span>
+          <span class="star active" data-value="2">★</span>
+          <span class="star active" data-value="3">★</span>
+          <span class="star active" data-value="4">★</span>
+          <span class="star active" data-value="5">★</span>
+        </div>
+      </div>
+
+      <!-- Photo upload -->
+      <div class="form-group">
+        <label>Your Photo (optional)</label>
+        <div class="photo-upload-area" id="photoArea" onclick="document.getElementById('photoInput').click()">
+          <div class="photo-preview" id="photoPreview">
+            <img id="photoImg" src="" alt="Your photo" />
+          </div>
+          <div class="photo-prompt" id="photoPrompt">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+            </svg>
+            <p>Click to upload your photo</p>
+            <span>JPG or PNG. Max 2MB. Will appear as a round avatar.</span>
+          </div>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input id="tName" type="text" placeholder="e.g. John Adeyemi" />
+        </div>
+        <div class="form-group">
+          <label>Job Title *</label>
+          <input id="tRole" type="text" placeholder="e.g. CEO, Founder" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Company Name</label>
+        <input id="tCompany" type="text" placeholder="e.g. TechCorp Nigeria" />
+      </div>
+
+      <div class="form-group">
+        <label>Your Review *</label>
+        <textarea id="tQuote" placeholder="Tell us what it was like working with Olatech IT Global. What problem did we solve? What results did you get?"></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitTestimonial()">
+        Submit My Review
+      </button>
+
+      <div class="form-status" id="formStatus"></div>
+
+    </div>
+
+    <!-- Success state -->
+    <div class="success-state" id="successState">
+      <div class="success-icon">✓</div>
+      <h2>Thank you!</h2>
+      <p>Your review has been submitted successfully. It will appear on our website after a quick review by our team — usually within 24 hours.</p>
+      <a href="/" class="btn btn--primary" style="margin-top:28px;display:inline-flex">Back to Olatech</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let photoData = '';
+  let rating = 5;
+
+  // Star rating
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      rating = parseInt(star.dataset.value);
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < rating);
+      });
+    });
+    star.addEventListener('mouseover', () => {
+      const val = parseInt(star.dataset.value);
+      stars.forEach((s, i) => s.style.color = i < val ? '#f59e0b' : '#334155');
+    });
+    star.addEventListener('mouseout', () => {
+      stars.forEach((s, i) => {
+        s.style.color = i < rating ? '#f59e0b' : '#334155';
+      });
+    });
+  });
+
+  // Photo upload
+  function handlePhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Photo is too large. Please use a photo under 2MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      photoData = e.target.result;
+      document.getElementById('photoImg').src = photoData;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoPrompt').style.display = 'none';
+      document.getElementById('photoArea').style.borderColor = '#2563eb';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Submit
+  async function submitTestimonial() {
+    const name    = document.getElementById('tName').value.trim();
+    const role    = document.getElementById('tRole').value.trim();
+    const company = document.getElementById('tCompany').value.trim();
+    const quote   = document.getElementById('tQuote').value.trim();
+    const status  = document.getElementById('formStatus');
+    const btn     = document.getElementById('submitBtn');
+
+    if (!name || !role || !quote) {
+      status.textContent = 'Please fill in your name, job title, and review.';
+      status.className = 'form-status error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    status.className = 'form-status';
+
+    try {
+      const res  = await fetch('/api/admin/testimonials/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, role, company, quote, photo: photoData, rating })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('submitForm').style.display = 'none';
+        document.getElementById('successState').style.display = 'block';
+      } else {
+        status.textContent = data.message || 'Something went wrong. Please try again.';
+        status.className = 'form-status error';
+        btn.disabled = false;
+        btn.textContent = 'Submit My Review';
+      }
+    } catch {
+      status.textContent = 'Could not connect. Please try again.';
+      status.className = 'form-status error';
+      btn.disabled = false;
+      btn.textContent = 'Submit My Review';
+    }
+  }
+</script>
+
+</body>
+</html>

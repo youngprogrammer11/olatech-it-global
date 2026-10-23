@@ -12,9 +12,19 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── Security ──
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'same-origin' }
+}));
 app.set('trust proxy', 1);
-app.use(cors());
+
+// CORS — only allow GET from any origin, restrict write methods to same origin
+app.use(cors({
+  origin: (origin, cb) => cb(null, true),
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
@@ -81,7 +91,7 @@ app.get('/api/pricing', async (req, res) => {
 
 app.get('/api/testimonials', async (req, res) => {
   try {
-    const data = await require('./models/Testimonial').find({ active: true }).sort({ order: 1 });
+    const data = await require('./models/Testimonial').find({ active: true, status: 'approved' }).sort({ order: 1 });
     res.json({ success: true, data });
   } catch { res.status(500).json({ success: false, data: [] }); }
 });
@@ -127,13 +137,14 @@ ${pages.map(p => `  <url>
 });
 
 // ── Page routes ──
-app.get('/blog',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog.html')));
-app.get('/blog/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog-post.html')));
-app.get('/admin',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
-app.get('/privacy',    (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
-app.get('/terms',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
-app.get('/',           (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.use(               (req, res) => res.status(404).sendFile(path.join(__dirname, 'public', '404.html')));
+app.get('/blog',               (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog.html')));
+app.get('/blog/:slug',         (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog-post.html')));
+app.get('/admin',              (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/privacy',            (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
+app.get('/terms',              (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
+app.get('/submit-testimonial', (req, res) => res.sendFile(path.join(__dirname, 'public', 'submit-testimonial.html')));
+app.get('/',                   (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.use(                       (req, res) => res.status(404).sendFile(path.join(__dirname, 'public', '404.html')));
 
 // ── MongoDB ──
 const connectDB = async () => {

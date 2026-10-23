@@ -76,10 +76,28 @@ router.delete('/contacts/:id', requireAuth, async (req, res) => {
   }
 });
 
+// ─── PUBLIC TESTIMONIAL SUBMISSION (no auth needed) ───
+router.post('/testimonials/submit', async (req, res) => {
+  try {
+    const { name, role, company, quote, photo } = req.body;
+    if (!name || !role || !quote) {
+      return res.status(400).json({ success: false, message: 'Name, role and review are required' });
+    }
+    const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    await Testimonial.create({
+      name, role, company, quote, photo: photo || '',
+      initials, status: 'pending', active: false
+    });
+    res.status(201).json({ success: true, message: 'Thank you! Your review has been submitted and will appear after approval.' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // ─── TESTIMONIALS ─────────────────────────────────────
 router.get('/testimonials', requireAuth, async (req, res) => {
   try {
-    const data = await Testimonial.find().sort({ order: 1, createdAt: -1 });
+    const data = await Testimonial.find().sort({ status: 1, createdAt: -1 });
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -100,6 +118,32 @@ router.post('/testimonials', requireAuth, async (req, res) => {
 router.put('/testimonials/:id', requireAuth, async (req, res) => {
   try {
     const item = await Testimonial.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.patch('/testimonials/:id/approve', requireAuth, async (req, res) => {
+  try {
+    const item = await Testimonial.findByIdAndUpdate(
+      req.params.id,
+      { status: 'approved', active: true },
+      { new: true }
+    );
+    res.json({ success: true, data: item });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.patch('/testimonials/:id/reject', requireAuth, async (req, res) => {
+  try {
+    const item = await Testimonial.findByIdAndUpdate(
+      req.params.id,
+      { status: 'rejected', active: false },
+      { new: true }
+    );
     res.json({ success: true, data: item });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
