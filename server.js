@@ -54,7 +54,7 @@ app.use(session({
   store: process.env.MONGODB_URI
     ? MongoStore.create({ mongoUrl: process.env.MONGODB_URI, touchAfter: 24 * 3600 })
     : undefined,
-  cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 }
+  cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true, sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000 }
 }));
 
 // ── Rate limiting ──
@@ -97,7 +97,7 @@ app.get('/api/blog/:slug', async (req, res) => {
     const post = await require('./models/Blog').findOne({ slug: req.params.slug, published: true });
     if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
     res.json({ success: true, data: post });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Something went wrong' }); }
 });
 
 app.get('/api/pricing', async (req, res) => {
@@ -119,6 +119,16 @@ app.get('/api/projects', async (req, res) => {
     const data = await require('./models/Project').find({ active: true }).sort({ order: 1 });
     res.json({ success: true, data });
   } catch { res.status(500).json({ success: false, data: [] }); }
+});
+
+// security.txt (RFC 9116) so researchers can report problems responsibly
+app.get('/.well-known/security.txt', (req, res) => {
+  res.type('text/plain').send(
+    'Contact: mailto:olakanmiquadri@gmail.com\n' +
+    'Expires: 2027-11-21T00:00:00.000Z\n' +
+    'Preferred-Languages: en\n' +
+    'Canonical: https://olatech-it-global.onrender.com/.well-known/security.txt\n'
+  );
 });
 
 app.get('/api/health', (req, res) => {

@@ -11,6 +11,29 @@ const Pricing    = require('../models/Pricing');
 const Blog       = require('../models/Blog');
 const Settings   = require('../models/Settings');
 const Service    = require('../models/Service');
+const { Resend } = require('resend');
+
+// Email the site owner whenever the admin panel is logged into.
+// Never blocks or fails the login itself.
+const sendLoginAlert = (req) => {
+  try {
+    if (!process.env.RESEND_API_KEY) return;
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const when = new Date().toLocaleString('en-GB', { timeZone: 'Africa/Lagos' });
+    resend.emails.send({
+      from: 'Olatech Website <onboarding@resend.dev>',
+      to: process.env.EMAIL_TO || 'olakanmiquadri@gmail.com',
+      subject: 'Admin login alert: Olatech panel',
+      html: `<h2>Admin login alert</h2>
+             <p>Your Olatech admin panel was just logged into.</p>
+             <p><strong>Time:</strong> ${when} (Africa/Lagos)</p>
+             <p><strong>IP address:</strong> ${req.ip || 'unknown'}</p>
+             <p>If this was not you, change the admin password immediately.</p>`
+    }).catch((e) => console.error('Login alert email failed:', e.message));
+  } catch (e) {
+    console.error('Login alert email failed:', e.message);
+  }
+};
 
 // ─── LOGIN ───────────────────────────────────────────
 // Brute-force protection: at most 5 login attempts per IP per 15 minutes.
@@ -55,6 +78,7 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: 'Session error' });
     }
     console.log('Admin logged in, session ID:', req.session.id);
+    sendLoginAlert(req);
     res.json({ success: true, message: 'Logged in' });
   });
 });
@@ -101,7 +125,16 @@ router.delete('/contacts/:id', requireAuth, async (req, res) => {
 });
 
 // ─── PUBLIC TESTIMONIAL SUBMISSION (no auth needed) ───
-router.post('/testimonials/submit', async (req, res) => {
+// Spam protection: at most 10 submissions per IP per 15 minutes.
+const submitLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many submissions. Please try again later.' }
+});
+
+router.post('/testimonials/submit', submitLimiter, async (req, res) => {
   try {
     const { name, role, company, quote, photo } = req.body;
     if (!name || !role || !quote) {
