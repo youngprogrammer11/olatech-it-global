@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://olatechitglobal.com/sitemap.xml
+Sitemap: https://olatech-it-global.onrender.com/sitemap.xml
