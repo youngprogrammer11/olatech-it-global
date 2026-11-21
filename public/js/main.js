@@ -1,5 +1,8 @@
 'use strict';
 
+/* Escape user-submitted text before inserting it into HTML (prevents stored XSS). */
+const escHtml = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 /* ─── Navbar scroll ─── */
 const navbar = document.getElementById('navbar');
 const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 50);
@@ -241,17 +244,17 @@ async function loadTestimonials() {
 
     const cards = data.data.map(t => {
       const avatar = t.photo
-        ? `<img src="${t.photo}" alt="${t.name}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
-        : `<div class="t-avatar" style="background:${t.color}">${t.initials}</div>`;
+        ? `<img src="${escHtml(t.photo)}" alt="${escHtml(t.name)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
+        : `<div class="t-avatar" style="background:${escHtml(t.color)}">${escHtml(t.initials)}</div>`;
       return `
         <div class="t-card">
           <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-          <p class="t-quote">"${t.quote}"</p>
+          <p class="t-quote">"${escHtml(t.quote)}"</p>
           <div class="t-author">
             ${avatar}
             <div>
-              <div class="t-name">${t.name}</div>
-              <div class="t-role">${t.role}${t.company ? ', ' + t.company : ''}</div>
+              <div class="t-name">${escHtml(t.name)}</div>
+              <div class="t-role">${escHtml(t.role)}${t.company ? ', ' + escHtml(t.company) : ''}</div>
             </div>
           </div>
         </div>`;
