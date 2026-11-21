@@ -387,6 +387,23 @@
           <button class="btn-save" onclick="saveStats()" style="padding:11px 28px">Save Stats</button>
         </div>
 
+        <!-- Payments and Analytics -->
+        <div class="table-wrap" style="padding:32px;border-radius:16px;margin-bottom:24px">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">Payments and Analytics</h3>
+          <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">Paste your Paystack or Flutterwave payment page link to show a "Pay a Project Deposit" button in the contact section. Paste your Google Analytics measurement ID (for example G-XXXXXXXXXX) to switch on visitor analytics. Leave a field as it is to keep the current value.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+            <div>
+              <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Deposit Payment Link</label>
+              <input id="depositLink" type="url" placeholder="https://paystack.shop/pay/..." style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:0.9rem;color:#e2e8f0;outline:none;font-family:inherit" />
+            </div>
+            <div>
+              <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Google Analytics ID</label>
+              <input id="analyticsId" type="text" placeholder="G-XXXXXXXXXX" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:0.9rem;color:#e2e8f0;outline:none;font-family:inherit" />
+            </div>
+          </div>
+          <button class="btn-save" onclick="saveSiteLinks()" style="padding:11px 28px">Save Payment and Analytics</button>
+        </div>
+
         <!-- About Photo -->
         <div class="table-wrap" style="padding:32px;border-radius:16px">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">About Section Photo</h3>
@@ -1305,6 +1322,37 @@
         const el   = document.getElementById(s.id);
         if (el) el.value = (data.success && data.data) ? data.data.value : s.fallback;
       } catch (err) {}
+    }
+
+    // Load payment + analytics settings
+    for (const k of ['depositLink', 'analyticsId']) {
+      try {
+        const res  = await fetch(`/api/admin/settings/${k}`);
+        const data = await res.json();
+        const el   = document.getElementById(k);
+        if (el && data.success && data.data) el.value = data.data.value;
+      } catch (err) {}
+    }
+  }
+
+  async function saveSiteLinks() {
+    try {
+      const fields = [
+        { key: 'depositLink', id: 'depositLink' },
+        { key: 'analyticsId', id: 'analyticsId' }
+      ];
+      for (const f of fields) {
+        const val = document.getElementById(f.id).value.trim();
+        if (!val) continue;
+        await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: f.key, value: val })
+        });
+      }
+      showToast('Payment and analytics settings saved.');
+    } catch (err) {
+      showToast('Failed to save settings', 'error');
     }
   }
 

@@ -23,6 +23,35 @@ const trackActive = () => {
 };
 window.addEventListener('scroll', trackActive, { passive: true });
 
+/* ─── Site integrations: deposit link and analytics, set in Admin > Settings ─── */
+(async () => {
+  try {
+    const dRes  = await fetch('/api/settings/depositLink');
+    const dData = await dRes.json();
+    const link  = dData && dData.success && dData.data ? String(dData.data.value || '').trim() : '';
+    if (/^https:\/\//i.test(link)) {
+      const wrap = document.getElementById('depositWrap');
+      const btn  = document.getElementById('depositBtn');
+      if (wrap && btn) { btn.href = link; wrap.style.display = 'block'; }
+    }
+  } catch (e) {}
+  try {
+    const aRes  = await fetch('/api/settings/analyticsId');
+    const aData = await aRes.json();
+    const id    = aData && aData.success && aData.data ? String(aData.data.value || '').trim() : '';
+    if (/^(G-[A-Z0-9]{4,}|UA-\d+-\d+)$/i.test(id)) {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src   = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id);
+    }
+  } catch (e) {}
+})();
+
 /* ─── Mobile menu ─── */
 const hamburger  = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
