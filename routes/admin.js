@@ -1,6 +1,8 @@
 const express    = require('express');
 const router     = express.Router();
 const bcrypt     = require('bcryptjs');
+const crypto     = require('crypto');
+const rateLimit  = require('express-rate-limit');
 const requireAuth = require('../middleware/auth');
 const Contact    = require('../models/Contact');
 const Testimonial = require('../models/Testimonial');
@@ -11,15 +13,37 @@ const Settings   = require('../models/Settings');
 const Service    = require('../models/Service');
 
 // ─── LOGIN ───────────────────────────────────────────
-router.post('/login', async (req, res) => {
+// Brute-force protection: at most 5 login attempts per IP per 15 minutes.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many login attempts. Please try again in 15 minutes.' }
+});
+
+router.post('/login', loginLimiter, async (req, res) => {
   const { password } = req.body;
-  const adminPassword = process.env.ADMIN_PASSWORD || 'olatech2024';
+  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+  const adminPassword     = process.env.ADMIN_PASSWORD;
+
+  if (!adminPasswordHash && !adminPassword) {
+    console.error('Admin login is not configured: set ADMIN_PASSWORD or ADMIN_PASSWORD_HASH in the environment.');
+    return res.status(503).json({ success: false, message: 'Admin login is not configured on the server' });
+  }
 
   if (!password) {
     return res.status(400).json({ success: false, message: 'Password required' });
   }
 
-  const match = password === adminPassword;
+  let match = false;
+  if (adminPasswordHash) {
+    match = await bcrypt.compare(String(password), adminPasswordHash);
+  } else {
+    const given    = Buffer.from(String(password));
+    const expected = Buffer.from(String(adminPassword));
+    match = given.length === expected.length && crypto.timingSafeEqual(given, expected);
+  }
   if (!match) {
     return res.status(401).json({ success: false, message: 'Wrong password' });
   }

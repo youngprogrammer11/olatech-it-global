@@ -3,6 +3,14 @@ const router   = express.Router();
 const { Resend } = require('resend');
 const Contact  = require('../models/Contact');
 
+// Escape user input before placing it in the notification email HTML.
+const escapeHtml = (v) => String(v ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
 // POST only — public submission
 router.post('/', async (req, res) => {
   try {
@@ -21,12 +29,12 @@ router.post('/', async (req, res) => {
         to:      process.env.EMAIL_TO || 'olakanmiquadri@gmail.com',
         subject: `New message from ${name}`,
         html:    `<h2>New Contact Form Submission</h2>
-                  <p><strong>Name:</strong> ${name}</p>
-                  <p><strong>Email:</strong> ${email}</p>
-                  <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-                  <p><strong>Service:</strong> ${service || 'Not specified'}</p>
+                  <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+                  <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+                  <p><strong>Phone:</strong> ${escapeHtml(phone || 'Not provided')}</p>
+                  <p><strong>Service:</strong> ${escapeHtml(service || 'Not specified')}</p>
                   <p><strong>Message:</strong></p>
-                  <p>${message}</p>`
+                  <p>${escapeHtml(message)}</p>`
       });
     } catch (emailErr) {
       console.error('Email send error:', emailErr.message);

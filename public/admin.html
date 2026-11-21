@@ -674,6 +674,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // Escape user-submitted text before inserting it into HTML (prevents stored XSS).
+  const escHtml = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let currentMsgId = null;
   let selectedColor = 'linear-gradient(135deg,#2563eb,#38bdf8)';
 
@@ -759,10 +761,10 @@
 
       tbody.innerHTML = rows.map(r => `
         <tr>
-          <td><strong>${r.name}</strong></td>
-          <td><a href="mailto:${r.email}" style="color:#60a5fa">${r.email}</a></td>
-          <td>${r.service || 'N/A'}</td>
-          <td class="msg-text">${r.message}</td>
+          <td><strong>${escHtml(r.name)}</strong></td>
+          <td><a href="mailto:${escHtml(r.email)}" style="color:#60a5fa">${escHtml(r.email)}</a></td>
+          <td>${escHtml(r.service || 'N/A')}</td>
+          <td class="msg-text">${escHtml(r.message)}</td>
           <td style="color:#64748b;white-space:nowrap">${new Date(r.createdAt).toLocaleDateString('en-GB')}</td>
           <td><span class="badge badge-${r.status}">${r.status}</span></td>
           <td><div class="actions">
@@ -777,11 +779,11 @@
     currentMsgId = id;
     document.getElementById('msgDetailContent').innerHTML = `
       <div class="msg-detail">
-        <div class="msg-detail-row"><div class="msg-detail-label">Name</div><div class="msg-detail-val">${unescape(name)}</div></div>
-        <div class="msg-detail-row"><div class="msg-detail-label">Email</div><div class="msg-detail-val"><a href="mailto:${unescape(email)}" style="color:#60a5fa">${unescape(email)}</a></div></div>
-        <div class="msg-detail-row"><div class="msg-detail-label">Phone</div><div class="msg-detail-val">${unescape(phone) || 'Not provided'}</div></div>
-        <div class="msg-detail-row"><div class="msg-detail-label">Service</div><div class="msg-detail-val">${unescape(service) || 'Not specified'}</div></div>
-        <div class="msg-detail-row"><div class="msg-detail-label">Message</div><div class="msg-detail-val" style="white-space:pre-wrap">${unescape(message)}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Name</div><div class="msg-detail-val">${escHtml(unescape(name))}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Email</div><div class="msg-detail-val"><a href="mailto:${escHtml(unescape(email))}" style="color:#60a5fa">${escHtml(unescape(email))}</a></div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Phone</div><div class="msg-detail-val">${escHtml(unescape(phone)) || 'Not provided'}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Service</div><div class="msg-detail-val">${escHtml(unescape(service)) || 'Not specified'}</div></div>
+        <div class="msg-detail-row"><div class="msg-detail-label">Message</div><div class="msg-detail-val" style="white-space:pre-wrap">${escHtml(unescape(message))}</div></div>
       </div>`;
     const btn = document.getElementById('markRepliedBtn');
     if (status === 'replied') {
@@ -909,8 +911,8 @@
 
       tbody.innerHTML = rows.map(r => {
         const avatar = r.photo
-          ? `<img src="${r.photo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
-          : `<div style="width:36px;height:36px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0;color:#fff">${r.initials}</div>`;
+          ? `<img src="${escHtml(r.photo)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
+          : `<div style="width:36px;height:36px;border-radius:50%;background:${escHtml(r.color)};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0;color:#fff">${escHtml(r.initials)}</div>`;
 
         const statusBadge = r.status === 'pending'
           ? `<span class="badge" style="background:rgba(234,179,8,0.15);color:#fbbf24">Pending</span>`
@@ -927,9 +929,9 @@
         return `
           <tr style="${r.status === 'pending' ? 'background:rgba(234,179,8,0.03)' : ''}">
             <td>${avatar}</td>
-            <td><strong>${r.name}</strong></td>
-            <td style="color:#94a3b8;font-size:0.82rem">${r.role}${r.company ? ', ' + r.company : ''}</td>
-            <td class="msg-text">${r.quote}</td>
+            <td><strong>${escHtml(r.name)}</strong></td>
+            <td style="color:#94a3b8;font-size:0.82rem">${escHtml(r.role)}${r.company ? ', ' + escHtml(r.company) : ''}</td>
+            <td class="msg-text">${escHtml(r.quote)}</td>
             <td>${statusBadge}</td>
             <td><div class="actions">${actionBtns}</div></td>
           </tr>`;
