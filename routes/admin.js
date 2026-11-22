@@ -302,7 +302,7 @@ router.get('/blog', requireAuth, async (req, res) => {
 
 router.post('/blog', requireAuth, async (req, res) => {
   try {
-    const { title, excerpt, content, category, coverColor, published } = req.body;
+    const { title, excerpt, content, category, coverColor, featuredImage, published } = req.body;
     // Generate slug from title
     const slug = title
       .toLowerCase()
@@ -315,7 +315,7 @@ router.post('/blog', requireAuth, async (req, res) => {
     const exists = await Blog.findOne({ slug });
     const finalSlug = exists ? `${slug}-${Date.now()}` : slug;
 
-    const item = await Blog.create({ title, slug: finalSlug, excerpt, content, category, coverColor, published });
+    const item = await Blog.create({ title, slug: finalSlug, excerpt, content, category, coverColor, featuredImage, published });
     res.status(201).json({ success: true, data: item });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

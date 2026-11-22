@@ -640,6 +640,14 @@
       </div>
     </div>
     <div class="form-group">
+      <label>Featured Image (optional, shown on the blog card and article header)</label>
+      <input type="file" id="blImageFile" accept="image/*" onchange="handleBlogImageUpload(event)" />
+      <div id="blImagePreviewWrap" style="display:none;margin-top:10px">
+        <img id="blImagePreview" alt="Featured image preview" style="max-width:100%;border-radius:10px" />
+        <button type="button" class="btn-cancel" style="margin-top:8px" onclick="clearBlogImage()">Remove image</button>
+      </div>
+    </div>
+    <div class="form-group">
       <label>Short Description * (shown on blog listing page)</label>
       <textarea id="blExcerpt" placeholder="A one or two sentence summary of what the article covers" style="min-height:80px"></textarea>
     </div>
@@ -1249,6 +1257,8 @@
     } catch (err) { console.error(err); }
   }
 
+  let blogImageData = '';
+
   function openBlogModal(b = null) {
     document.getElementById('blogModalTitle').textContent = b ? 'Edit Article' : 'Write Article';
     document.getElementById('blId').value          = b ? b._id : '';
@@ -1258,7 +1268,34 @@
     document.getElementById('blExcerpt').value     = b ? b.excerpt : '';
     document.getElementById('blContent').value     = b ? b.content : '';
     document.getElementById('blPublished').checked = b ? b.published : false;
+    blogImageData = b ? (b.featuredImage || '') : '';
+    document.getElementById('blImageFile').value = '';
+    document.getElementById('blImagePreviewWrap').style.display = blogImageData ? 'block' : 'none';
+    if (blogImageData) document.getElementById('blImagePreview').src = blogImageData;
     document.getElementById('blogModal').style.display = 'flex';
+  }
+
+  function handleBlogImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Image is too large. Please use an image under 2MB.', 'error');
+      event.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      blogImageData = e.target.result;
+      document.getElementById('blImagePreview').src = blogImageData;
+      document.getElementById('blImagePreviewWrap').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearBlogImage() {
+    blogImageData = '';
+    document.getElementById('blImageFile').value = '';
+    document.getElementById('blImagePreviewWrap').style.display = 'none';
   }
 
   function editBlog(b) { openBlogModal(b); }
@@ -1269,6 +1306,7 @@
       title:      document.getElementById('blTitle').value.trim(),
       category:   document.getElementById('blCategory').value.trim() || 'Technology',
       coverColor: document.getElementById('blCoverColor').value,
+      featuredImage: blogImageData,
       excerpt:    document.getElementById('blExcerpt').value.trim(),
       content:    document.getElementById('blContent').value.trim(),
       published:  document.getElementById('blPublished').checked
