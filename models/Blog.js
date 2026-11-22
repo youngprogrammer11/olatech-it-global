@@ -7,6 +7,7 @@ const blogSchema = new mongoose.Schema({
   content:     { type: String, required: true },
   category:    { type: String, trim: true, default: 'Technology' },
   coverColor:  { type: String, default: 'linear-gradient(135deg,#0a1f5c,#2563eb)' },
+  featuredImage: { type: String, default: '' },
   published:   { type: Boolean, default: false },
   createdAt:   { type: Date, default: Date.now },
   updatedAt:   { type: Date, default: Date.now }
