@@ -1167,6 +1167,8 @@
       const res  = await fetch('/api/admin/pricing');
       const data = await res.json();
       const rows = data.data || [];
+      pricingRowsById = {};
+      rows.forEach(r => { pricingRowsById[r._id] = r; });
       const tbody = document.getElementById('pricingTable');
       if (!rows.length) {
         tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><p>No pricing added yet.</p></div></td></tr>`;
@@ -1181,7 +1183,7 @@
           <td>${r.highlighted ? '<span class="badge badge-replied">Yes</span>' : '<span class="badge badge-read">No</span>'}</td>
           <td><span class="badge ${r.active ? 'badge-replied' : 'badge-read'}">${r.active ? 'Active' : 'Hidden'}</span></td>
           <td><div class="actions">
-            <button class="action-btn btn-edit" onclick='editPricing(${JSON.stringify(r)})'>Edit</button>
+            <button class="action-btn btn-edit" onclick="editPricingById('${r._id}')">Edit</button>
             <button class="action-btn btn-delete" onclick="deletePricing('${r._id}')">Delete</button>
           </div></td>
         </tr>`).join('');
@@ -1200,7 +1202,14 @@
     document.getElementById('pricingModal').style.display = 'flex';
   }
 
+  let pricingRowsById = {};
+
   function editPricing(p) { openPricingModal(p); }
+
+  function editPricingById(id) {
+    const p = pricingRowsById[id];
+    if (p) openPricingModal(p);
+  }
 
   async function savePricing() {
     const id      = document.getElementById('prId').value;
@@ -1236,6 +1245,8 @@
       const res  = await fetch('/api/admin/blog');
       const data = await res.json();
       const rows = data.data || [];
+      blogRowsById = {};
+      rows.forEach(r => { blogRowsById[r._id] = r; });
       const tbody = document.getElementById('blogTable');
       if (!rows.length) {
         tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><p>No articles yet. Write your first one.</p></div></td></tr>`;
@@ -1250,7 +1261,7 @@
           <td style="color:#64748b;white-space:nowrap">${new Date(r.createdAt).toLocaleDateString('en-GB')}</td>
           <td><div class="actions">
             <a href="/blog/${r.slug}" target="_blank" class="action-btn btn-view">View</a>
-            <button class="action-btn btn-edit" onclick='editBlog(${JSON.stringify(r)})'>Edit</button>
+            <button class="action-btn btn-edit" onclick="editBlogById('${r._id}')">Edit</button>
             <button class="action-btn btn-delete" onclick="deleteBlog('${r._id}')">Delete</button>
           </div></td>
         </tr>`).join('');
@@ -1298,7 +1309,14 @@
     document.getElementById('blImagePreviewWrap').style.display = 'none';
   }
 
+  let blogRowsById = {};
+
   function editBlog(b) { openBlogModal(b); }
+
+  function editBlogById(id) {
+    const b = blogRowsById[id];
+    if (b) openBlogModal(b);
+  }
 
   async function saveBlog() {
     const id      = document.getElementById('blId').value;
