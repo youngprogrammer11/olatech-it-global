@@ -4,6 +4,7 @@ const bcrypt     = require('bcryptjs');
 const crypto     = require('crypto');
 const rateLimit  = require('express-rate-limit');
 const requireAuth = require('../middleware/auth');
+const { verifyTotp } = require('../middleware/totp');
 const Contact    = require('../models/Contact');
 const Testimonial = require('../models/Testimonial');
 const Project    = require('../models/Project');
@@ -46,7 +47,7 @@ const loginLimiter = rateLimit({
 });
 
 router.post('/login', loginLimiter, async (req, res) => {
-  const { password } = req.body;
+  const { password, totp } = req.body;
   const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
   const adminPassword     = process.env.ADMIN_PASSWORD;
 
@@ -69,6 +70,19 @@ router.post('/login', loginLimiter, async (req, res) => {
   }
   if (!match) {
     return res.status(401).json({ success: false, message: 'Wrong password' });
+  }
+
+  // Second factor, active only when ADMIN_TOTP_SECRET is set in the
+  // environment. Removing that variable returns the login to password
+  // only, which is also the recovery path if the authenticator is lost.
+  const totpSecret = process.env.ADMIN_TOTP_SECRET;
+  if (totpSecret) {
+    if (!totp) {
+      return res.status(401).json({ success: false, code: 'TOTP_REQUIRED', message: 'Authenticator code required' });
+    }
+    if (!verifyTotp(totpSecret, totp)) {
+      return res.status(401).json({ success: false, code: 'TOTP_INVALID', message: 'Invalid authenticator code' });
+    }
   }
 
   req.session.isAdmin = true;
