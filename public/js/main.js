@@ -395,6 +395,13 @@ function openCaseStudyByIndex(i) {
   const p = (window._csProjects || [])[i];
   if (p) openCaseStudy(p);
 }
+function openProjectByName(name) {
+  const list = window._csProjects || [];
+  const i = list.findIndex(p => p.name === name);
+  if (i >= 0) { openCaseStudyByIndex(i); return; }
+  const el = document.getElementById('portfolio');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
 function openCaseStudy(project) {
   const overlay = document.getElementById('caseStudyOverlay');
   const p = typeof project === 'string' ? JSON.parse(project) : project;
