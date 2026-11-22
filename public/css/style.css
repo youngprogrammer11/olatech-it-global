@@ -209,7 +209,7 @@ body::after {
   gap: 36px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
   padding: 96px 24px 40px; box-sizing: border-box; overflow-y: auto;
 }
-@media (max-height: 760px) {
+@media (max-height: 900px) {
   .mobile-menu { justify-content: flex-start; gap: 26px; }
   .mobile-menu a { font-size: 1.85rem; }
 }
