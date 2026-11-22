@@ -49,7 +49,7 @@
       line-height: 1.75;
     }
 
-    .blog-section { padding: var(--space-2xl) 0; background: var(--ink); }
+    .blog-section { padding: var(--space-2xl) 0; background: var(--ink); min-height: 480px; }
 
     .blog-grid {
       display: grid;
@@ -238,8 +238,8 @@
     <div class="blog-grid" id="blogGrid">
       <div class="blog-empty">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-        <h3>No articles yet</h3>
-        <p>Check back soon. Our first articles are on the way.</p>
+        <h3>Loading articles</h3>
+        <p>Please wait a moment.</p>
       </div>
     </div>
   </div>
@@ -286,6 +286,11 @@
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© <span id="year"></span> <strong>Olatech IT Global</strong>. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/cookies">Cookie Policy</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -326,9 +331,17 @@
     try {
       const res  = await fetch('/api/blog');
       const data = await res.json();
-      if (!data.success || !data.data || data.data.length === 0) return;
-
       const grid = document.getElementById('blogGrid');
+      if (!data.success || !data.data || data.data.length === 0) {
+        grid.innerHTML = `
+      <div class="blog-empty">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        <h3>No articles yet</h3>
+        <p>Check back soon. Our first articles are on the way.</p>
+      </div>`;
+        return;
+      }
+
       grid.innerHTML = data.data.map((post, i) => `
         <a href="/blog/${post.slug}" class="blog-card">
           <div class="blog-card-cover">
@@ -359,11 +372,20 @@
       `).join('');
     } catch (err) {
       console.log('Blog load error:', err);
+      const grid = document.getElementById('blogGrid');
+      if (grid) {
+        grid.innerHTML = `
+      <div class="blog-empty">
+        <h3>Could not load articles</h3>
+        <p>Please check your connection and refresh the page.</p>
+      </div>`;
+      }
     }
   }
 
   loadBlog();
 </script>
 
+<script src="/js/cookie-notice.js"></script>
 </body>
 </html>

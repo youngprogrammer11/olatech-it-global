@@ -25,7 +25,8 @@ app.use(helmet({
       connectSrc: ["'self'", "https://www.google-analytics.com", "https://region1.google-analytics.com", "https://www.googletagmanager.com"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
-      frameAncestors: ["'self'"]
+      frameAncestors: ["'self'"],
+      frameSrc: ["'self'", "https://www.google.com"]
     }
   },
   crossOriginResourcePolicy: { policy: 'same-origin' }
@@ -144,6 +145,9 @@ app.get('/sitemap.xml', async (req, res) => {
     const pages   = [
       { url: '/',     priority: '1.0', changefreq: 'weekly'  },
       { url: '/blog', priority: '0.8', changefreq: 'weekly'  },
+      { url: '/privacy', priority: '0.3', changefreq: 'yearly' },
+      { url: '/terms',   priority: '0.3', changefreq: 'yearly' },
+      { url: '/cookies', priority: '0.3', changefreq: 'yearly' },
       ...posts.map(p => ({
         url:        `/blog/${p.slug}`,
         priority:   '0.7',
@@ -171,6 +175,7 @@ app.get('/blog/:slug',         (req, res) => res.sendFile(path.join(__dirname, '
 app.get('/admin',              (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/privacy',            (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
 app.get('/terms',              (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
+app.get('/cookies',            (req, res) => res.sendFile(path.join(__dirname, 'public', 'cookies.html')));
 app.get('/submit-testimonial', (req, res) => res.sendFile(path.join(__dirname, 'public', 'submit-testimonial.html')));
 app.get('/',                   (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.use(                       (req, res) => res.status(404).sendFile(path.join(__dirname, 'public', '404.html')));

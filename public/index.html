@@ -937,9 +937,9 @@
     <div class="footer-bottom">
       <p class="footer-copy">© <span id="year"></span> <strong>Olatech IT Global</strong>. All rights reserved.</p>
       <div class="footer-legal">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Cookie Policy</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/cookies">Cookie Policy</a>
       </div>
     </div>
   </div>
@@ -954,7 +954,7 @@
 
     <!-- Cover image or colour -->
     <div id="cscover" style="height:220px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
-      <img id="csimage" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />
+      <img id="csimage" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a1120" />
       <div id="cscoverBg" style="position:absolute;inset:0"></div>
       <div id="cscoverIcon" style="position:relative;z-index:1;text-align:center">
         <div style="width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
@@ -998,7 +998,7 @@
     <!-- Cover image / colour -->
     <div id="csThumb" style="aspect-ratio:16/7;position:relative;overflow:hidden">
       <div id="csBg" style="position:absolute;inset:0"></div>
-      <img id="csImg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />
+      <img id="csImg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a1120" />
       <div id="csIconArea" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
         <div id="csIconWrap" style="text-align:center"></div>
       </div>
@@ -1130,5 +1130,6 @@
   }
 </style>
 
+<script src="/js/cookie-notice.js"></script>
 </body>
 </html>
