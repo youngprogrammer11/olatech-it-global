@@ -65,6 +65,15 @@ app.use('/api/contact', rateLimit({
   message: { success: false, message: 'Too many requests. Please try again later.' }
 }));
 
+// ── Brand icons (served from data so the tab icon always matches the logo) ──
+const { FAVICON_PNG, APPLE_ICON_PNG } = require('./favicon-data');
+app.get('/favicon.png', (req, res) => {
+  res.type('png').set('Cache-Control', 'public, max-age=604800').send(FAVICON_PNG);
+});
+app.get('/apple-touch-icon.png', (req, res) => {
+  res.type('png').set('Cache-Control', 'public, max-age=604800').send(APPLE_ICON_PNG);
+});
+
 // ── Static files ──
 app.use(express.static(path.join(__dirname, 'public')));
 
