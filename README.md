@@ -255,4 +255,4 @@ Replace `.project-placeholder` divs with `<img>` tags pointing to actual project
 **Olatech IT Global**
 - Email: info@olatechitglobal.com
 - Website: https://olatechitglobal.com
-- Location: Ibadan, Oyo State, Nigeria
+- Location: Lagos, Nigeria
