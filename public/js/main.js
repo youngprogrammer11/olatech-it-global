@@ -322,10 +322,10 @@ async function loadProjects() {
       marketing: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z"/></svg>`
     };
 
+    window._csProjects = data.data;
     const cards = data.data.map((p, i) => {
-      const safeProject = JSON.stringify(p).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
       const thumb = p.imageData
-        ? `<img src="${p.imageData}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />`
+        ? `<img src="${p.imageData}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a1120" />`
         : `<div class="proj-bg ${p.theme}"></div>
            <div class="proj-icon-center">
              ${iconMap[p.category] || iconMap.web}
@@ -334,8 +334,8 @@ async function loadProjects() {
       return `
         <div class="proj-card" data-category="${p.category}"
           style="border-radius:20px;overflow:hidden;background:var(--surface-1);border:1px solid var(--border-1);transition:transform 0.4s,box-shadow 0.4s,border-color 0.3s;cursor:pointer"
-          onclick='openCaseStudy(${JSON.stringify(p)})'>
-          <div class="proj-thumb" style="position:relative;aspect-ratio:16/10;overflow:hidden">
+          onclick="openCaseStudyByIndex(${i})">
+          <div class="proj-thumb" style="position:relative;aspect-ratio:16/10;overflow:hidden;background:#0a1120">
             ${thumb}
             <div class="proj-hover-overlay"><span class="proj-cta">View Case Study</span></div>
           </div>
@@ -391,6 +391,10 @@ async function loadHeroStats() {
 }
 
 /* ─── Case Study Popup ─── */
+function openCaseStudyByIndex(i) {
+  const p = (window._csProjects || [])[i];
+  if (p) openCaseStudy(p);
+}
 function openCaseStudy(project) {
   const overlay = document.getElementById('caseStudyOverlay');
   const p = typeof project === 'string' ? JSON.parse(project) : project;

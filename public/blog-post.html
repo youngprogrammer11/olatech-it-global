@@ -58,7 +58,7 @@
     .post-meta span { display: flex; align-items: center; gap: 6px; }
 
     /* Article body */
-    .post-body { padding: 72px 0 100px; background: var(--ink); }
+    .post-body { padding: 72px 0 100px; background: var(--ink); min-height: 55vh; }
     .post-content {
       max-width: 720px;
       margin: 0 auto;
@@ -195,7 +195,7 @@
   <div class="container">
     <div class="post-hero-content" id="postHeroContent">
       <!-- Loaded by JS -->
-      <div style="color:var(--text-tertiary);font-size:0.9rem">Loading...</div>
+      <div style="color:var(--text-tertiary);font-size:0.9rem">Loading article...</div>
     </div>
   </div>
 </div>
@@ -260,6 +260,11 @@
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© <span id="year"></span> <strong>Olatech IT Global</strong>. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/cookies">Cookie Policy</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -360,5 +365,6 @@
   loadPost();
 </script>
 
+<script src="/js/cookie-notice.js"></script>
 </body>
 </html>

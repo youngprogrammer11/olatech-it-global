@@ -893,3 +893,8 @@ footer { background: var(--ink); border-top: 1px solid var(--border-1); padding:
   .t-quote { font-size: 0.85rem; }
   #whatsappBtn { bottom: 16px; right: 16px; width: 52px; height: 52px; padding: 0; border-radius: 50%; justify-content: center; }
 }
+
+/* ─── SCROLL CUE: hide where it would overlap the hero stats ─── */
+@media (max-width: 768px), (max-height: 720px) {
+  .scroll-cue { display: none; }
+}
