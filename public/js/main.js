@@ -59,12 +59,14 @@ const mobileMenu = document.getElementById('mobileMenu');
 hamburger.addEventListener('click', () => {
   const open = hamburger.classList.toggle('open');
   mobileMenu.classList.toggle('open', open);
+  document.body.classList.toggle('menu-open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 });
 
 function closeMobile() {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
+  document.body.classList.remove('menu-open');
   document.body.style.overflow = '';
 }
 
