@@ -324,7 +324,9 @@ body::after {
 
 /* Hero floating card (right side) */
 .hero-visual {
-  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  /* Right edge lines up with the container content edge (same line as the
+     Start a Project button), not the edge of the screen. */
+  position: absolute; right: max(32px, calc((100% - 1200px) / 2 + 32px)); top: 50%; transform: translateY(-50%);
   z-index: 1; width: 400px;
   opacity: 0; animation: slide-in-right 1.1s var(--ease-out) 0.5s forwards;
 }
