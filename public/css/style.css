@@ -533,7 +533,7 @@ body::after {
   font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--text-accent); margin-bottom: 8px;
 }
-.mv-block p { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.65; }
+.mv-block p { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.65; text-align: justify; hyphens: auto; }
 .value-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .value-pill {
   display: flex; align-items: center; gap: 6px;
@@ -673,7 +673,7 @@ body::after {
 .t-card:hover { border-color: var(--border-3); }
 .t-stars { display: flex; gap: 3px; margin-bottom: 18px; }
 .t-stars span { color: #f59e0b; font-size: 0.82rem; }
-.t-quote { font-size: 0.91rem; line-height: 1.75; color: var(--text-secondary); font-style: italic; margin-bottom: 26px; }
+.t-quote { font-size: 0.91rem; line-height: 1.75; color: var(--text-secondary); font-style: italic; margin-bottom: 26px; text-align: justify; hyphens: auto; }
 .t-author { display: flex; align-items: center; gap: 12px; }
 .t-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
 .t-name { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
@@ -710,7 +710,7 @@ body::after {
 #contact { background: var(--ink); }
 .contact-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 80px; align-items: start; }
 .contact-info .section-heading { margin: 16px 0 18px; }
-.contact-info > p { font-size: 0.97rem; line-height: 1.78; color: var(--text-secondary); margin-bottom: 44px; }
+.contact-info > p { font-size: 0.97rem; line-height: 1.78; color: var(--text-secondary); margin-bottom: 44px; text-align: justify; hyphens: auto; }
 .contact-items { display: flex; flex-direction: column; gap: 22px; margin-bottom: 44px; }
 .c-item { display: flex; align-items: flex-start; gap: 16px; }
 .c-icon {
