@@ -368,11 +368,11 @@
         <!-- Hero Stats -->
         <div class="table-wrap" style="padding:32px;border-radius:16px;margin-bottom:24px">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">Hero Stats</h3>
-          <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">These are the four numbers shown on your homepage. Update them to reflect your real achievements.</p>
+          <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">These numbers are shown on your homepage. Projects Delivered is automatic: it counts the projects in your portfolio, so there is nothing to set for it.</p>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
             <div>
               <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Projects Delivered</label>
-              <input id="statProjects" type="number" placeholder="150" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#60a5fa;outline:none;font-family:inherit" />
+              <div style="width:100%;background:#0f172a;border:1px dashed rgba(255,255,255,0.15);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#94a3b8;font-family:inherit">Automatic</div>
             </div>
             <div>
               <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Client Satisfaction %</label>
@@ -1378,7 +1378,6 @@
 
     // Load stats
     const statKeys = [
-      { key: 'statProjects',     id: 'statProjects',     fallback: '150' },
       { key: 'statSatisfaction', id: 'statSatisfaction', fallback: '98'  },
       { key: 'statCountries',    id: 'statCountries',    fallback: '12'  },
       { key: 'statYears',        id: 'statYears',        fallback: '8'   },
@@ -1426,7 +1425,6 @@
 
   async function saveStats() {
     const stats = [
-      { key: 'statProjects',     id: 'statProjects'     },
       { key: 'statSatisfaction', id: 'statSatisfaction' },
       { key: 'statCountries',    id: 'statCountries'    },
       { key: 'statYears',        id: 'statYears'        },
