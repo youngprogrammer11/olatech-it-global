@@ -319,8 +319,14 @@ body::after {
   font-size: 2rem; font-weight: 800; letter-spacing: -0.03em;
   line-height: 1; background: var(--grad-brand);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  transition: filter 0.35s var(--ease-out);
 }
-.proof-label { font-size: 0.8rem; color: var(--text-tertiary); margin-top: 5px; font-weight: 500; }
+.proof-label { font-size: 0.8rem; color: var(--text-tertiary); margin-top: 5px; font-weight: 500; transition: color 0.35s var(--ease-out); }
+/* Subtle hover only: a small lift and glow, no pointer cursor, as the stats are not links. */
+.proof-stat { transition: transform 0.35s var(--ease-out); }
+.proof-stat:hover { transform: translateY(-3px); }
+.proof-stat:hover .proof-num { filter: brightness(1.3) drop-shadow(0 0 14px rgba(59,130,246,0.45)); }
+.proof-stat:hover .proof-label { color: var(--text-secondary); }
 .proof-divider { width: 1px; height: 40px; background: var(--border-2); flex-shrink: 0; }
 
 /* Hero floating card (right side) */
