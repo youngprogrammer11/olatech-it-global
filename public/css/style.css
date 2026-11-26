@@ -413,6 +413,7 @@ body::after {
   background: var(--surface-1); border: 1px solid var(--border-1);
   border-radius: 20px; padding: 36px 32px;
   position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
   transition: border-color 0.3s, background 0.3s, transform 0.3s var(--ease-out), box-shadow 0.3s;
 }
 .svc-card::before {
@@ -422,6 +423,12 @@ body::after {
 }
 .svc-card:hover { border-color: var(--border-2); background: var(--surface-2); transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .svc-card:hover::before { opacity: 1; }
+/* Once revealed, the card takes back its hover: .reveal.in would otherwise
+   keep transform:none and the reveal timing, killing the lift. */
+.svc-card.reveal.in {
+  transition: opacity 0.75s var(--ease-out), transform 0.3s var(--ease-out), border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.svc-card.reveal.in:hover { transform: translateY(-4px); transition-delay: 0s; }
 
 .svc-index { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; color: var(--text-tertiary); margin-bottom: 24px; display: block; }
 .svc-icon-wrap {
@@ -436,7 +443,7 @@ body::after {
 .svc-title { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 12px; }
 .svc-desc { font-size: 0.875rem; line-height: 1.72; color: var(--text-secondary); margin-bottom: 16px; }
 .svc-outcome { font-size: 0.875rem; font-weight: 600; line-height: 1.6; color: var(--text-primary); margin-bottom: 24px; }
-.svc-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; font-size: 0.82rem; font-weight: 600; color: var(--cobalt-soft); text-decoration: none; cursor: pointer; }
+.svc-link { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 18px; font-size: 0.82rem; font-weight: 600; color: var(--cobalt-soft); text-decoration: none; cursor: pointer; }
 .svc-link:hover { color: var(--arctic); text-decoration: underline; }
 .svc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .svc-tag {
