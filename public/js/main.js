@@ -325,6 +325,7 @@ async function loadProjects() {
     };
 
     window._csProjects = data.data;
+    window._projectCount = data.data.length;
     const cards = data.data.map((p, i) => {
       const thumb = p.imageData
         ? `<img src="${p.imageData}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a1120" />`
@@ -358,7 +359,7 @@ async function loadProjects() {
 
 // Run on page load
 loadTestimonials();
-loadProjects();
+window._projectsPromise = loadProjects();
 loadPricing();
 loadAboutPhoto();
 loadHeroStats();
@@ -367,7 +368,6 @@ loadCustomServices();
 /* ─── Load hero stats from database ─── */
 async function loadHeroStats() {
   const statMap = [
-    { key: 'statProjects',     fallback: '150', selectors: ['[data-count="150"]'] },
     { key: 'statSatisfaction', fallback: '98',  selectors: ['[data-count="98"]']  },
     { key: 'statCountries',    fallback: '12',  selectors: ['[data-count="12"]']  },
     { key: 'statYears',        fallback: '8',   selectors: ['[data-count="8"]']   },
@@ -386,6 +386,15 @@ async function loadHeroStats() {
         });
       }
     } catch (err) {}
+  }
+
+  // Projects Delivered is automatic: it counts the real projects in the portfolio,
+  // so it always matches what visitors can see and rises as projects are added.
+  try { await window._projectsPromise; } catch (err) {}
+  if (window._projectCount) {
+    document.querySelectorAll('[data-stat-projects]').forEach(el => {
+      el.dataset.count = String(window._projectCount);
+    });
   }
 
   // Now start the counters after all values are updated
