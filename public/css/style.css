@@ -405,7 +405,7 @@ body::after {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 60px; align-items: end; margin-bottom: 72px;
 }
-.services-intro-right p { font-size: 1rem; line-height: 1.78; color: var(--text-secondary); }
+.services-intro-right p { font-size: 1rem; line-height: 1.78; color: var(--text-secondary); text-align: justify; hyphens: auto; }
 
 .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
@@ -441,7 +441,7 @@ body::after {
 .svc-card:hover .svc-icon-wrap { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.25); }
 .svc-card:hover .svc-icon-wrap svg { color: var(--arctic); }
 .svc-title { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 12px; }
-.svc-desc { font-size: 0.875rem; line-height: 1.72; color: var(--text-secondary); margin-bottom: 16px; }
+.svc-desc { font-size: 0.875rem; line-height: 1.72; color: var(--text-secondary); margin-bottom: 16px; text-align: justify; hyphens: auto; }
 .svc-outcome { font-size: 0.875rem; font-weight: 600; line-height: 1.6; color: var(--text-primary); margin-bottom: 24px; }
 .svc-link { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 18px; font-size: 0.82rem; font-weight: 600; color: var(--cobalt-soft); text-decoration: none; cursor: pointer; }
 .svc-link:hover { color: var(--arctic); text-decoration: underline; }
@@ -522,7 +522,7 @@ body::after {
 .float-label { font-size: 0.72rem; color: var(--text-tertiary); font-weight: 500; margin-top: 3px; }
 
 .about-text-col .section-heading { margin: 16px 0 20px; }
-.about-text-col > p { font-size: 1rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 14px; }
+.about-text-col > p { font-size: 1rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 14px; text-align: justify; hyphens: auto; }
 .mv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 36px 0; }
 .mv-block {
   background: var(--surface-1); border: 1px solid var(--border-1);
@@ -650,7 +650,9 @@ body::after {
 .proj-meta { padding: 24px 26px; }
 .proj-cat { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-accent); margin-bottom: 6px; }
 .proj-name { font-size: 0.98rem; font-weight: 700; letter-spacing: -0.015em; color: var(--text-primary); margin-bottom: 6px; }
-.proj-desc { font-size: 0.82rem; color: var(--text-tertiary); line-height: 1.55; }
+.proj-desc { font-size: 0.82rem; color: var(--text-tertiary); line-height: 1.55; text-align: justify; hyphens: auto; }
+/* Case study modal body text (description and Challenge / Solution / Results). */
+#csDesc, #csChallenge, #csSolution, #csResults { text-align: justify; hyphens: auto; }
 
 /* ═══════════════════════════════════════════════════════════
    TESTIMONIALS
