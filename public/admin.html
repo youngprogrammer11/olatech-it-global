@@ -368,7 +368,7 @@
         <!-- Hero Stats -->
         <div class="table-wrap" style="padding:32px;border-radius:16px;margin-bottom:24px">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">Hero Stats</h3>
-          <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">These numbers are shown on your homepage. Projects Delivered is automatic: it counts the projects in your portfolio, so there is nothing to set for it.</p>
+          <p style="font-size:0.83rem;color:#64748b;margin-bottom:24px">These numbers are shown on your homepage. Projects Delivered and Years of Excellence are automatic: Projects counts the projects in your portfolio, and Years counts from 2017, so there is nothing to set for them.</p>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
             <div>
               <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Projects Delivered</label>
@@ -384,7 +384,7 @@
             </div>
             <div>
               <label style="font-size:0.77rem;font-weight:600;color:#94a3b8;display:block;margin-bottom:7px">Years of Excellence</label>
-              <input id="statYears" type="number" placeholder="8" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#60a5fa;outline:none;font-family:inherit" />
+              <div style="width:100%;background:#0f172a;border:1px dashed rgba(255,255,255,0.15);border-radius:9px;padding:11px 14px;font-size:1.1rem;font-weight:700;color:#94a3b8;font-family:inherit">Automatic</div>
             </div>
           </div>
           <button class="btn-save" onclick="saveStats()" style="padding:11px 28px">Save Stats</button>
@@ -522,7 +522,7 @@
   <div class="modal">
     <h3 id="projectModalTitle">Add Project</h3>
     <input type="hidden" id="pId" />
-    <div class="form-group"><label>Project Name *</label><input id="pName" placeholder="e.g. FinEdge Banking Platform" /></div>
+    <div class="form-group"><label>Project Name *</label><input id="pName" placeholder="e.g. Arcadia" /></div>
     <div class="form-row">
       <div class="form-group">
         <label>Category *</label>
@@ -1380,7 +1380,6 @@
     const statKeys = [
       { key: 'statSatisfaction', id: 'statSatisfaction', fallback: '98'  },
       { key: 'statCountries',    id: 'statCountries',    fallback: '12'  },
-      { key: 'statYears',        id: 'statYears',        fallback: '8'   },
     ];
     for (const s of statKeys) {
       try {
@@ -1427,7 +1426,6 @@
     const stats = [
       { key: 'statSatisfaction', id: 'statSatisfaction' },
       { key: 'statCountries',    id: 'statCountries'    },
-      { key: 'statYears',        id: 'statYears'        },
     ];
     try {
       for (const s of stats) {

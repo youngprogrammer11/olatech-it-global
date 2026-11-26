@@ -214,13 +214,13 @@ if (form) {
       });
       const data = await res.json();
       if (data.success) {
-        showStatus('success', 'Message sent. We will get back to you within 24 hours.');
+        showStatus('success', 'Message sent. We will get back to you within one business day.');
         form.reset();
       } else {
         showStatus('error', data.message || 'Something went wrong. Please try again.');
       }
     } catch {
-      showStatus('error', 'Could not connect. Please email us at info@olatechitglobal.com');
+      showStatus('error', 'Could not connect. Please email us at olakanmiquadri@gmail.com');
     } finally {
       setLoading(false);
     }
@@ -370,7 +370,6 @@ async function loadHeroStats() {
   const statMap = [
     { key: 'statSatisfaction', fallback: '98',  selectors: ['[data-count="98"]']  },
     { key: 'statCountries',    fallback: '12',  selectors: ['[data-count="12"]']  },
-    { key: 'statYears',        fallback: '8',   selectors: ['[data-count="8"]']   },
   ];
 
   for (const s of statMap) {
@@ -395,7 +394,17 @@ async function loadHeroStats() {
     document.querySelectorAll('[data-stat-projects]').forEach(el => {
       el.dataset.count = String(window._projectCount);
     });
+    document.querySelectorAll('[data-stat-projects-text]').forEach(el => {
+      el.textContent = String(window._projectCount);
+    });
   }
+
+  // Years of Excellence is automatic too: it counts from the 2017 start,
+  // so it steps up on its own each year and never needs typing in Admin.
+  const yearsCount = Math.max(new Date().getFullYear() - 2017, 0);
+  document.querySelectorAll('[data-stat-years]').forEach(el => {
+    el.dataset.count = String(yearsCount);
+  });
 
   // Now start the counters after all values are updated
   startCounters();
