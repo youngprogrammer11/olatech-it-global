@@ -111,8 +111,7 @@ function startCounters() {
 }
 
 /* ─── Portfolio filter ─── */
-const filterBtns   = document.querySelectorAll('.f-btn');
-const projectCards = document.querySelectorAll('.proj-card');
+const filterBtns = document.querySelectorAll('.f-btn');
 
 filterBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -120,7 +119,10 @@ filterBtns.forEach(btn => {
     btn.classList.add('active');
     const filter = btn.dataset.filter;
 
-    projectCards.forEach(card => {
+    // Cards are rendered from the API after this script loads, so they must
+    // be queried at click time. Capturing them once at startup found none
+    // and left the filters silently dead.
+    document.querySelectorAll('.proj-card').forEach(card => {
       const match = filter === 'all' || card.dataset.category === filter;
       card.style.transition = 'opacity 0.3s, transform 0.3s';
       if (match) {
@@ -619,3 +621,16 @@ async function loadCustomServices() {
     console.log('No custom services to load');
   }
 }
+
+/* ─── Back to top ─── */
+(function () {
+  var b = document.createElement('button');
+  b.className = 'to-top';
+  b.setAttribute('aria-label', 'Back to top');
+  b.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-7 7l7-7 7 7"/></svg>';
+  document.body.appendChild(b);
+  function onScroll() { b.classList.toggle('show', window.scrollY > 600); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+})();

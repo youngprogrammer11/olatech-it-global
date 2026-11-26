@@ -7,7 +7,7 @@
   <meta name="description" content="Terms of Service for Olatech IT Global. Read the terms that govern our services and your use of our website." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://olatech-it-global.onrender.com/terms" />
-  <link rel="stylesheet" href="/css/style.css?v=20261126h" />
+  <link rel="stylesheet" href="/css/style.css?v=20261126i" />
   <link rel="icon" type="image/png" href="/favicon.png?v=20261122c" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KZBN2KDMN6"></script>
@@ -215,5 +215,17 @@
   document.getElementById('navbar').classList.add('scrolled');
 </script>
 <script src="/js/cookie-notice.js"></script>
+
+<button class="to-top" id="toTop" aria-label="Back to top"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-7 7l7-7 7 7"/></svg></button>
+<script>
+(function () {
+  var b = document.getElementById('toTop');
+  if (!b) return;
+  function onScroll() { b.classList.toggle('show', window.scrollY > 600); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+})();
+</script>
 </body>
 </html>
