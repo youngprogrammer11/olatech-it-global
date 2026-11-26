@@ -309,6 +309,7 @@ body::after {
 }
 
 .hero-proof {
+  width: 100%; justify-content: space-between;
   margin-top: 80px; padding-top: 56px;
   border-top: 1px solid var(--border-1);
   display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
@@ -366,34 +367,6 @@ body::after {
 .card-footer-val { font-size: 1.2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
 
 /* Scroll cue */
-.scroll-cue {
-  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  z-index: 1; opacity: 0; animation: rise 0.8s var(--ease-out) 1.2s forwards;
-}
-.scroll-cue span {
-  font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--text-tertiary); font-weight: 600;
-}
-.scroll-pill {
-  width: 24px; height: 40px; border: 1px solid var(--border-2);
-  border-radius: 12px; display: flex; justify-content: center; padding-top: 7px;
-}
-.scroll-pill::after {
-  content: ''; width: 3px; height: 7px;
-  background: var(--arctic); border-radius: 2px;
-  animation: scroll-drop 1.8s ease-in-out infinite;
-}
-@keyframes scroll-drop { 0%{transform:translateY(0);opacity:1} 70%{transform:translateY(9px);opacity:0} 71%{transform:translateY(0);opacity:0} 100%{opacity:1} }
-@keyframes rise { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-
-/* ═══════════════════════════════════════════════════════════
-   MARQUEE
-═══════════════════════════════════════════════════════════ */
-.marquee-strip {
-  border-top: 1px solid var(--border-1); border-bottom: 1px solid var(--border-1);
-  padding: 28px 0; overflow: hidden; background: rgba(255,255,255,0.012);
-}
 .marquee-track {
   display: flex; gap: 72px; width: max-content;
   animation: marquee-flow 32s linear infinite;
@@ -836,7 +809,6 @@ footer { background: var(--ink); border-top: 1px solid var(--border-1); padding:
   .proof-divider { display: none; }
   .proof-stat { min-width: calc(50% - 20px); }
   .proof-num { font-size: 1.6rem; }
-  .scroll-cue { display: none; }
   .services-intro { grid-template-columns: 1fr; gap: 20px; }
   .services-grid { grid-template-columns: 1fr; }
   .svc-card { padding: 28px 24px; }
@@ -906,5 +878,4 @@ footer { background: var(--ink); border-top: 1px solid var(--border-1); padding:
 
 /* ─── SCROLL CUE: hide where it would overlap the hero stats ─── */
 @media (max-width: 768px), (max-height: 720px) {
-  .scroll-cue { display: none; }
 }
