@@ -53,10 +53,11 @@
     }
     .post-meta {
       display: flex; align-items: center; justify-content: center; gap: 20px;
-      font-size: 0.82rem; color: var(--text-tertiary);
+      font-size: 0.82rem; color: var(--text-secondary);
       flex-wrap: wrap;
     }
     .post-meta span { display: flex; align-items: center; gap: 6px; }
+    .post-byline { color: var(--text-primary); font-weight: 600; }
 
     /* Article body */
     .post-body { padding: 72px 0 100px; background: var(--ink); min-height: 55vh; }
@@ -381,7 +382,7 @@
         document.getElementById('postHero').style.backgroundSize = 'cover';
         document.getElementById('postHero').style.backgroundPosition = 'center';
         // Add dark overlay for readability
-        document.getElementById('postHeroBg').style.background = 'rgba(8,12,20,0.75)';
+        document.getElementById('postHeroBg').style.background = 'linear-gradient(180deg, rgba(8,12,20,0.70) 0%, rgba(8,12,20,0.82) 55%, rgba(8,12,20,0.96) 100%)';
       } else {
         document.getElementById('postHero').style.background = post.coverColor || 'var(--ink-2)';
       }
@@ -403,7 +404,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             ${Math.max(1, Math.ceil(post.content.split(' ').length / 200))} min read
           </span>
-          <span>By Quadri Olakanmi, Founder</span>
+          <span class="post-byline">By Quadri Olakanmi, Founder</span>
         </div>
       `;
 
