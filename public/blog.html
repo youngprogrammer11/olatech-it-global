@@ -57,6 +57,54 @@
       gap: 24px;
     }
 
+    .blog-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    .blog-cats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .blog-cat {
+      padding: 9px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .blog-cat:hover { color: var(--text-primary); border-color: var(--border-3); }
+    .blog-cat.active { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+    .blog-search { position: relative; }
+    .blog-search svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; color: var(--text-tertiary); pointer-events: none;
+    }
+    .blog-search input {
+      width: 260px;
+      max-width: 100%;
+      padding: 10px 16px 10px 40px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      background: var(--surface-1);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+    .blog-search input:focus { border-color: var(--cobalt); }
+    .blog-search input::placeholder { color: var(--text-tertiary); }
+    .blog-noresults { text-align: center; padding: 30px 0 10px; }
+    .blog-noresults h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+    .blog-noresults p { color: var(--text-secondary); font-size: 0.95rem; }
+    @media (max-width: 640px) { .blog-search { width: 100%; } .blog-search input { width: 100%; } }
+
     .blog-card {
       background: var(--surface-1);
       border: 1px solid var(--border-1);
@@ -235,6 +283,17 @@
 <!-- BLOG GRID -->
 <section class="blog-section">
   <div class="container">
+    <div class="blog-tools" id="blogTools" style="display:none">
+      <div class="blog-cats" id="blogCats"></div>
+      <div class="blog-search">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+        <input type="search" id="blogSearch" placeholder="Search articles..." aria-label="Search articles">
+      </div>
+    </div>
+    <div class="blog-noresults" id="blogNoResults" style="display:none">
+      <h3>No articles match</h3>
+      <p>Try a different word, or pick another category above.</p>
+    </div>
     <div class="blog-grid" id="blogGrid">
       <div class="blog-empty">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
@@ -327,22 +386,12 @@
   ];
 
   // Load blog posts
-  async function loadBlog() {
-    try {
-      const res  = await fetch('/api/blog');
-      const data = await res.json();
-      const grid = document.getElementById('blogGrid');
-      if (!data.success || !data.data || data.data.length === 0) {
-        grid.innerHTML = `
-      <div class="blog-empty">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-        <h3>No articles yet</h3>
-        <p>Check back soon. Our first articles are on the way.</p>
-      </div>`;
-        return;
-      }
+  let allPosts = [];
+  let activeCat = 'All';
+  let searchQuery = '';
 
-      grid.innerHTML = data.data.map((post, i) => `
+  function cardHtml(post, i) {
+    return `
         <a href="/blog/${post.slug}" class="blog-card">
           <div class="blog-card-cover">
             ${post.featuredImage
@@ -369,7 +418,61 @@
             </div>
           </div>
         </a>
-      `).join('');
+      `;
+  }
+
+  function renderBlog() {
+    const grid = document.getElementById('blogGrid');
+    const q = searchQuery.trim().toLowerCase();
+    const shown = allPosts.filter(p => {
+      const inCat = activeCat === 'All' || (p.category || 'Technology') === activeCat;
+      if (!inCat) return false;
+      if (!q) return true;
+      return (p.title + ' ' + (p.excerpt || '') + ' ' + (p.category || '')).toLowerCase().includes(q);
+    });
+    document.getElementById('blogNoResults').style.display = shown.length ? 'none' : 'block';
+    grid.innerHTML = shown.map(cardHtml).join('');
+  }
+
+  function renderCats() {
+    const cats = ['All'];
+    allPosts.forEach(p => {
+      const c = p.category || 'Technology';
+      if (!cats.includes(c)) cats.push(c);
+    });
+    const wrap = document.getElementById('blogCats');
+    wrap.innerHTML = cats.map(c => `<button type="button" class="blog-cat${c === activeCat ? ' active' : ''}" data-cat="${c}">${c}</button>`).join('');
+    wrap.querySelectorAll('.blog-cat').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.getAttribute('data-cat');
+        wrap.querySelectorAll('.blog-cat').forEach(b => b.classList.toggle('active', b === btn));
+        renderBlog();
+      });
+    });
+  }
+
+  async function loadBlog() {
+    try {
+      const res  = await fetch('/api/blog');
+      const data = await res.json();
+      const grid = document.getElementById('blogGrid');
+      if (!data.success || !data.data || data.data.length === 0) {
+        grid.innerHTML = `
+      <div class="blog-empty">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+        <h3>No articles yet</h3>
+        <p>Check back soon. Our first articles are on the way.</p>
+      </div>`;
+        return;
+      }
+      allPosts = data.data;
+      renderCats();
+      renderBlog();
+      document.getElementById('blogTools').style.display = 'flex';
+      document.getElementById('blogSearch').addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderBlog();
+      });
     } catch (err) {
       console.log('Blog load error:', err);
       const grid = document.getElementById('blogGrid');
