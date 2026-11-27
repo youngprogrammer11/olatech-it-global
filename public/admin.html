@@ -190,6 +190,10 @@
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
         Blog
       </div>
+      <div class="nav-item" onclick="showPage('subscribers')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z"/></svg>
+        Subscribers
+      </div>
     </div>
 
     <!-- Main -->
@@ -352,6 +356,26 @@
           <table>
             <thead><tr><th>Title</th><th>Category</th><th>Slug / URL</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
             <tbody id="blogTable"><tr><td colspan="6" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUBSCRIBERS PAGE -->
+      <div class="page" id="page-subscribers">
+        <div class="page-header">
+          <div>
+            <h2>Newsletter Subscribers</h2>
+            <p>Everyone who signed up on the blog. Copy the emails into any mailing tool when you are ready to send.</p>
+          </div>
+          <button class="add-btn" onclick="copySubscribers()">Copy all emails</button>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="num" id="countSubscribers">0</div><div class="lbl">Total Subscribers</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Email</th><th>Source</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="subscribersTable"><tr><td colspan="4" style="text-align:center;padding:40px;color:#475569">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -765,7 +789,46 @@
     if (name === 'projects')     loadProjects();
     if (name === 'pricing')      loadPricing();
     if (name === 'blog')         loadBlog();
+    if (name === 'subscribers') loadSubscribers();
     if (name === 'settings')     loadSettings();
+  }
+
+  // ── SUBSCRIBERS ──
+  let subscriberEmails = [];
+  async function loadSubscribers() {
+    try {
+      const res = await fetch('/api/admin/subscribers');
+      const data = await res.json();
+      const tbody = document.getElementById('subscribersTable');
+      document.getElementById('countSubscribers').textContent = (data.data || []).length;
+      if (!data.success || !data.data || data.data.length === 0) {
+        subscriberEmails = [];
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;color:#475569">No subscribers yet. They will appear here as readers sign up on the blog.</td></tr>';
+        return;
+      }
+      subscriberEmails = data.data.map(r => r.email);
+      tbody.innerHTML = data.data.map(r => `
+        <tr>
+          <td>${r.email}</td>
+          <td>${r.source || 'blog'}</td>
+          <td>${new Date(r.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}</td>
+          <td><button class="action-btn btn-delete" onclick="deleteSubscriber('${r._id}')">Remove</button></td>
+        </tr>`).join('');
+    } catch (err) { showToast('Could not load subscribers', 'error'); }
+  }
+
+  async function deleteSubscriber(id) {
+    if (!confirm('Remove this subscriber?')) return;
+    try {
+      await fetch('/api/admin/subscribers/' + id, { method: 'DELETE' });
+      showToast('Subscriber removed');
+      loadSubscribers();
+    } catch (err) { showToast('Could not remove subscriber', 'error'); }
+  }
+
+  function copySubscribers() {
+    if (!subscriberEmails.length) { showToast('No subscribers to copy', 'error'); return; }
+    navigator.clipboard.writeText(subscriberEmails.join(', ')).then(() => showToast('Emails copied: ' + subscriberEmails.length));
   }
 
   // ── TOAST ──

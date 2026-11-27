@@ -109,6 +109,30 @@ app.get('/api/blog', async (req, res) => {
   } catch { res.status(500).json({ success: false, data: [] }); }
 });
 
+
+// ── Newsletter subscribe (public) ──
+// Signups are stored in the site database and listed in the admin
+// panel. At most 10 attempts per IP per 15 minutes.
+const subscribeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, max: 10,
+  standardHeaders: true, legacyHeaders: false,
+  message: { success: false, message: 'Too many attempts. Please try again later.' }
+});
+app.post('/api/subscribe', subscribeLimiter, async (req, res) => {
+  try {
+    const email = String((req.body && req.body.email) || '').trim().toLowerCase();
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+    }
+    const Subscriber = require('./models/Subscriber');
+    const existing = await Subscriber.findOne({ email });
+    if (existing) return res.json({ success: true, message: 'You are already subscribed. Thank you.' });
+    const source = typeof req.body.source === 'string' ? req.body.source.slice(0, 40) : 'blog';
+    await Subscriber.create({ email, source });
+    res.status(201).json({ success: true, message: 'Subscribed. Welcome aboard.' });
+  } catch { res.status(500).json({ success: false, message: 'Something went wrong. Please try again.' }); }
+});
+
 app.get('/api/blog/:slug', async (req, res) => {
   try {
     const post = await require('./models/Blog').findOne({ slug: req.params.slug, published: true });

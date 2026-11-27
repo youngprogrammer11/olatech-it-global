@@ -90,6 +90,14 @@
     .share-btn:hover { color: var(--text-primary); border-color: var(--border-3); transform: translateY(-2px); }
     .post-related { padding: 72px 0 84px; background: var(--ink-2); }
     .post-related h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 30px; }
+    .subscribe-section { padding: 72px 0 84px; background: var(--ink); }
+    .subscribe-box { background: var(--surface-1); border: 1px solid var(--border-1); border-radius: 18px; padding: 38px 34px; text-align: center; }
+    .subscribe-box h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .subscribe-box > p { color: var(--text-secondary); font-size: 0.98rem; max-width: 520px; margin: 0 auto 22px; line-height: 1.65; }
+    .subscribe-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .subscribe-form input { width: 320px; max-width: 100%; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--border-2); background: var(--ink); color: var(--text-primary); font-family: var(--font-sans); font-size: 0.95rem; outline: none; }
+    .subscribe-form input:focus { border-color: var(--cobalt); }
+    .subscribe-msg { margin-top: 14px; font-size: 0.9rem; font-weight: 600; }
     .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
     .rel-card { display: block; background: var(--surface-1); border: 1px solid var(--border-1); border-radius: 14px; overflow: hidden; text-decoration: none; transition: transform 0.3s var(--ease-out), border-color 0.3s, box-shadow 0.3s; }
     .rel-card:hover { transform: translateY(-4px); border-color: var(--border-3); box-shadow: 0 18px 40px rgba(0,0,0,0.35); }
@@ -253,6 +261,21 @@
   <div class="container">
     <h2>Keep reading</h2>
     <div class="related-grid" id="relatedGrid"></div>
+  </div>
+</section>
+
+<!-- SUBSCRIBE -->
+<section class="subscribe-section">
+  <div class="container">
+    <div class="subscribe-box">
+      <h2>Get new articles in your inbox</h2>
+      <p>Practical tech and business articles from Olatech, as they are published. No spam, and you can leave anytime.</p>
+      <form class="subscribe-form" data-subscribe>
+        <input type="email" required placeholder="Your email address" aria-label="Email address">
+        <button type="submit" class="btn btn--primary">Subscribe</button>
+      </form>
+      <p class="subscribe-msg" hidden></p>
+    </div>
   </div>
 </section>
 
@@ -443,6 +466,31 @@
   }
 
   loadPost();
+</script>
+
+<script>
+(function () {
+  document.querySelectorAll('form[data-subscribe]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = form.querySelector('input[type=email]');
+      var box = form.closest('.subscribe-box');
+      var msg = box.querySelector('.subscribe-msg');
+      var btn = form.querySelector('button');
+      btn.disabled = true;
+      fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: input.value, source: 'article' }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          msg.hidden = false;
+          msg.textContent = d.message || 'Done.';
+          msg.style.color = d.success ? '#4ade80' : '#f87171';
+          if (d.success) form.reset();
+        })
+        .catch(function () { msg.hidden = false; msg.textContent = 'Something went wrong. Please try again.'; msg.style.color = '#f87171'; })
+        .finally(function () { btn.disabled = false; });
+    });
+  });
+})();
 </script>
 
 <script src="/js/cookie-notice.js"></script>
