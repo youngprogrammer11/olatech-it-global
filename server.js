@@ -80,6 +80,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ── API Routes ──
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/admin',   require('./routes/admin'));
+app.use('/api/author',  require('./routes/author'));
 
 // ── Public API endpoints ──
 app.get('/api/services', async (req, res) => {
