@@ -12,6 +12,7 @@ const Pricing    = require('../models/Pricing');
 const Blog       = require('../models/Blog');
 const Settings   = require('../models/Settings');
 const Service    = require('../models/Service');
+const Subscriber = require('../models/Subscriber');
 const { Resend } = require('resend');
 
 // Email the site owner whenever the admin panel is logged into.
@@ -132,6 +133,25 @@ router.patch('/contacts/:id', requireAuth, async (req, res) => {
 router.delete('/contacts/:id', requireAuth, async (req, res) => {
   try {
     await Contact.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ─── NEWSLETTER SUBSCRIBERS ──────────────────────────
+router.get('/subscribers', requireAuth, async (req, res) => {
+  try {
+    const subscribers = await Subscriber.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: subscribers });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/subscribers/:id', requireAuth, async (req, res) => {
+  try {
+    await Subscriber.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
