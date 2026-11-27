@@ -8,6 +8,7 @@ const session    = require('express-session');
 const crypto     = require('crypto');
 const MongoStore = require('connect-mongo');
 const path       = require('path');
+const fs         = require('fs');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -181,7 +182,57 @@ ${pages.map(p => `  <url>
 
 // ── Page routes ──
 app.get('/blog',               (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog.html')));
-app.get('/blog/:slug',         (req, res) => res.sendFile(path.join(__dirname, 'public', 'blog-post.html')));
+
+// Blog cover images live in the database as data URLs, which share
+// crawlers cannot fetch. This route serves each published post cover
+// as a real image file at a public address for link previews.
+app.get('/blog/:slug/cover.jpg', async (req, res) => {
+  try {
+    const post = await require('./models/Blog').findOne({ slug: req.params.slug, published: true });
+    const img = post && typeof post.featuredImage === 'string' ? post.featuredImage : '';
+    const match = img.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/s);
+    if (!match) return res.redirect(302, '/og-image.png');
+    res.type(match[1]).set('Cache-Control', 'public, max-age=86400').send(Buffer.from(match[2], 'base64'));
+  } catch { res.redirect(302, '/og-image.png'); }
+});
+
+// Article pages carry this article's own title, description and cover
+// in their share tags, written in by the server, because the share
+// crawlers at WhatsApp, X and LinkedIn never run the page script that
+// fills them in for human visitors.
+const escapeHtmlAttr = (s) => String(s || '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+let blogPostTemplate = null;
+app.get('/blog/:slug', async (req, res) => {
+  const file = path.join(__dirname, 'public', 'blog-post.html');
+  try {
+    const post = await require('./models/Blog').findOne({ slug: req.params.slug, published: true });
+    if (!post) return res.sendFile(file);
+    if (!blogPostTemplate) blogPostTemplate = await fs.promises.readFile(file, 'utf8');
+    const base    = `${req.protocol}://${req.get('host')}`;
+    const pageUrl = `${base}/blog/${post.slug}`;
+    const title   = escapeHtmlAttr(`${post.title} — Olatech IT Global`);
+    const desc    = escapeHtmlAttr(post.excerpt);
+    const ogBlock = [
+      `<meta property="og:type" content="article" />`,
+      `<meta property="og:url" content="${pageUrl}" />`,
+      `<meta property="og:title" content="${title}" />`,
+      `<meta property="og:description" content="${desc}" />`,
+      `<meta property="og:image" content="${base}/blog/${post.slug}/cover.jpg" />`,
+      `<meta property="og:site_name" content="Olatech IT Global" />`,
+      `<meta name="twitter:card" content="summary_large_image" />`,
+      `<meta name="twitter:title" content="${title}" />`,
+      `<meta name="twitter:description" content="${desc}" />`,
+      `<meta name="twitter:image" content="${base}/blog/${post.slug}/cover.jpg" />`
+    ].join('\n  ');
+    const html = blogPostTemplate
+      .replace('<title id="pageTitle">Article — Olatech IT Global</title>', `<title id="pageTitle">${title}</title>`)
+      .replace('<meta name="description" id="pageDesc" content="Read this article from Olatech IT Global." />',
+               `<meta name="description" id="pageDesc" content="${desc}" />\n  ${ogBlock}`);
+    res.type('html').set('Cache-Control', 'public, max-age=300').send(html);
+  } catch { res.sendFile(file); }
+});
 app.get('/admin',              (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/privacy',            (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
 app.get('/terms',              (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
