@@ -88,6 +88,18 @@
     .post-share-btns { display: flex; gap: 10px; flex-wrap: wrap; }
     .share-btn { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); background: var(--surface-2); border: 1px solid var(--border-2); padding: 9px 18px; border-radius: 100px; text-decoration: none; cursor: pointer; transition: all 0.25s; font-family: inherit; }
     .share-btn:hover { color: var(--text-primary); border-color: var(--border-3); transform: translateY(-2px); }
+    .post-related { padding: 72px 0 84px; background: var(--ink-2); }
+    .post-related h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 30px; }
+    .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .rel-card { display: block; background: var(--surface-1); border: 1px solid var(--border-1); border-radius: 14px; overflow: hidden; text-decoration: none; transition: transform 0.3s var(--ease-out), border-color 0.3s, box-shadow 0.3s; }
+    .rel-card:hover { transform: translateY(-4px); border-color: var(--border-3); box-shadow: 0 18px 40px rgba(0,0,0,0.35); }
+    .rel-card-img { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--surface-2); }
+    .rel-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .rel-card-body { display: block; padding: 18px 20px 20px; }
+    .rel-card-cat { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cobalt-soft); margin-bottom: 8px; }
+    .rel-card-title { display: block; font-size: 1.02rem; font-weight: 700; line-height: 1.4; color: var(--text-primary); margin-bottom: 10px; }
+    .rel-card-meta { display: block; font-size: 0.8rem; color: var(--text-tertiary); }
+    @media (max-width: 860px) { .related-grid { grid-template-columns: 1fr; } }
     .post-content ul, .post-content ol {
       padding-left: 24px;
       margin-bottom: 22px;
@@ -236,6 +248,14 @@
   </div>
 </section>
 
+<!-- RELATED POSTS -->
+<section class="post-related" id="postRelated" style="display:none">
+  <div class="container">
+    <h2>Keep reading</h2>
+    <div class="related-grid" id="relatedGrid"></div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
@@ -360,7 +380,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             ${Math.max(1, Math.ceil(post.content.split(' ').length / 200))} min read
           </span>
-          <span>Olatech IT Global</span>
+          <span>By Quadri Olakanmi, Founder</span>
         </div>
       `;
 
@@ -382,6 +402,35 @@
         if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(shareUrl).then(done).catch(done); }
         else { done(); }
       });
+
+      // Related posts: same category first, then newest. Uses the light
+      // list so the article page does not download every post in full.
+      try {
+        const listRes  = await fetch('/api/blog?light=1');
+        const listData = await listRes.json();
+        if (listData.success && Array.isArray(listData.data)) {
+          const others = listData.data.filter(p => p.slug !== post.slug);
+          others.sort((a, b) => {
+            const ac = (a.category === post.category) ? 0 : 1;
+            const bc = (b.category === post.category) ? 0 : 1;
+            if (ac !== bc) return ac - bc;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          });
+          const rel = others.slice(0, 3);
+          if (rel.length) {
+            document.getElementById('relatedGrid').innerHTML = rel.map(p => `
+              <a class="rel-card" href="/blog/${p.slug}">
+                <span class="rel-card-img"><img src="/blog/${p.slug}/cover.jpg" alt="" loading="lazy"></span>
+                <span class="rel-card-body">
+                  <span class="rel-card-cat">${p.category || 'Technology'}</span>
+                  <span class="rel-card-title">${p.title}</span>
+                  <span class="rel-card-meta">${new Date(p.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}</span>
+                </span>
+              </a>`).join('');
+            document.getElementById('postRelated').style.display = 'block';
+          }
+        }
+      } catch (e) { /* Related posts are a bonus; never break the article. */ }
 
     } catch (err) {
       document.getElementById('postHeroContent').innerHTML = `
