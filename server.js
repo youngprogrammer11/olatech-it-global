@@ -100,7 +100,11 @@ app.get('/api/settings/:key', async (req, res) => {
 
 app.get('/api/blog', async (req, res) => {
   try {
-    const data = await require('./models/Blog').find({ published: true }).sort({ createdAt: -1 });
+    let query = require('./models/Blog').find({ published: true }).sort({ createdAt: -1 });
+    // ?light=1 returns post metadata without the heavy content and
+    // cover data, for places like the related posts row.
+    if (req.query.light) query = query.select('-content -featuredImage');
+    const data = await query;
     res.json({ success: true, data });
   } catch { res.status(500).json({ success: false, data: [] }); }
 });
@@ -226,10 +230,22 @@ app.get('/blog/:slug', async (req, res) => {
       `<meta name="twitter:description" content="${desc}" />`,
       `<meta name="twitter:image" content="${base}/blog/${post.slug}/cover.jpg" />`
     ].join('\n  ');
+    const jsonLd = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: post.excerpt,
+      image: [`${base}/blog/${post.slug}/cover.jpg`],
+      datePublished: new Date(post.createdAt).toISOString(),
+      dateModified: new Date(post.updatedAt || post.createdAt).toISOString(),
+      author: { '@type': 'Person', name: 'Quadri Olakanmi', jobTitle: 'Founder' },
+      publisher: { '@type': 'Organization', name: 'Olatech IT Global', logo: { '@type': 'ImageObject', url: `${base}/favicon.png` } },
+      mainEntityOfPage: pageUrl
+    }).replace(/</g, '\\u003c');
     const html = blogPostTemplate
       .replace('<title id="pageTitle">Article — Olatech IT Global</title>', `<title id="pageTitle">${title}</title>`)
       .replace('<meta name="description" id="pageDesc" content="Read this article from Olatech IT Global." />',
-               `<meta name="description" id="pageDesc" content="${desc}" />\n  ${ogBlock}`);
+               `<meta name="description" id="pageDesc" content="${desc}" />\n  ${ogBlock}\n  <script type="application/ld+json">${jsonLd}</script>`);
     res.type('html').set('Cache-Control', 'public, max-age=300').send(html);
   } catch { res.sendFile(file); }
 });
