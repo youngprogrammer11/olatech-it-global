@@ -53,7 +53,7 @@ router.post('/blog', authorLimiter, async (req, res) => {
   if (coverColor !== undefined && (typeof coverColor !== 'string' || coverColor.length > 200)) {
     return res.status(400).json({ success: false, message: 'Invalid cover colour' });
   }
-  if (featuredImage !== undefined && (typeof featuredImage !== 'string' || featuredImage.length > 500000)) {
+  if (featuredImage !== undefined && (typeof featuredImage !== 'string' || featuredImage.length > 1500000)) {
     return res.status(400).json({ success: false, message: 'Invalid featured image' });
   }
 
