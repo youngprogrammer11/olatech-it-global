@@ -44,7 +44,7 @@ router.post('/blog', authorLimiter, async (req, res) => {
   if (typeof excerpt !== 'string' || !excerpt.trim() || excerpt.length > 300) {
     return res.status(400).json({ success: false, message: 'An excerpt of up to 300 characters is required' });
   }
-  if (typeof content !== 'string' || !content.trim() || content.length > 200000) {
+  if (typeof content !== 'string' || !content.trim() || content.length > 3000000) {
     return res.status(400).json({ success: false, message: 'Post content is required' });
   }
   if (category !== undefined && (typeof category !== 'string' || category.length > 60)) {
